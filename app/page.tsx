@@ -1,10 +1,10 @@
 import Image from 'next/image'
-import {Hero,Registration,Login} from '@/components'
+import {Hero,Registration,Login,Shop} from '@/components'
 
 export default function Home() {
   return (
     <main className="overflow-hidden">
-     <Login></Login>
+     <Shop></Shop>
     </main>
   )
 }
