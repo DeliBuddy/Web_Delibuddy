@@ -1,13 +1,11 @@
 import React from 'react';
-
+import Image from 'next/image';
 const LoginScreen = () => {
   return (
-    <div className="flex flex-col bg-black justify-center items-center">
-        <button
-          className="w-full text-white text-inter font-bold text-left  ml-8 mt-[30px]"
-        >
-        &lt;   Home 
-        </button>
+    <div className="flex flex-col h-screen items-center bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4">
+        <div className='md:block hidden  ml-10  w-full'>
+            <Image src="/home.png" width={100} height={100} alt="Home" className='rounded-xl' />
+        </div>
       <div className=" flex flex-col p-8 gap-2 rounded-xl shadow-lg bg-white bg-opacity-5 md:px-24 w-4/5 md:w-auto mt-[50px]">
       
         <p className=" font-bold mb-4 text-center text-[#E1573A] font-inter  text-[20px] md:text-[25px]">Welcome Back!</p>

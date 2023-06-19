@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Hero = () => {
   return (
-    <div className="bg-[url('/bg.png')]">
+    <div className="bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center">
       <div className="flex flex-col md:flex-row justify-between items-center px-20 py-8 ">
         <div>
           <Image src="/logo.png" width={200} height={40} alt="Logo" />
@@ -28,7 +28,7 @@ const Hero = () => {
         </button>
       </div>
 
-      <div className="bottom flex flex-col rounded-t-lg w-90vw md:mx-[40px] px-8 md:px-24 py-14 mt-[100px]">
+      <div className="bottom bg-black flex flex-col rounded-t-3xl w-90vw md:mx-[40px] mx-[20px] px-8 md:px-24 py-14 mt-[100px]">
         <div className="flex flex-col md:flex-row justify-between items-center ">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col md:flex-row items-center gap-4">
