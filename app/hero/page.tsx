@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -9,10 +10,14 @@ const Hero = () => {
         </div>
         <div className="flex items-center gap-10 mt-8 md:mt-0">
         <div className="font-inter font-extrabold mr-4 text-[12px] md:text-[16px]">Contact Us</div>
-        <div className=" block md:hidden text-[#E1573A] font-inter font-extrabold mr-4 text-[12px] md:text-[16px]">Log In</div>
+            <Link href="/login">
+        <button className=" block md:hidden text-[#E1573A] font-inter font-extrabold mr-4 text-[12px] md:text-[16px]">
+            Log In
+            </button>
           <button className="hidden md:block bg-[#E1573A] font-inter font-extrabold rounded-lg px-4 py-2">
             Log In
           </button>
+            </Link>
         </div>
       </div>
 
@@ -22,9 +27,10 @@ const Hero = () => {
         <div className="font-inter font-bold md:mr-20 md:w-1/4 text-[18px] mt-[30px]">
           Get Medicines, Food, Groceries and much more, delivered to you by your DeliBuddies!
         </div>
-
         <button className="w-full md:w-auto bg-[#E1573A] font-inter font-extrabold rounded-lg px-10 py-4 mt-[30px]">
+        <Link href="/registration">
           Join DeliBuddy
+        </Link>
         </button>
       </div>
 

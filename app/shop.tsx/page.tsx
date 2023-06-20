@@ -2,14 +2,14 @@ import React from 'react';
 import Image from 'next/image';
 const Shop = () => {
   const shops = [
-    { name: 'Shop 1', image: '/shop.png' },
-    { name: 'Shop 2', image: '/shop.png' },
-    { name: 'Shop 3', image: '/shop.png' },
-    { name: 'Shop 4', image: '/shop.png' },
-    { name: 'Shop 5', image: '/shop.png' },
-    { name: 'Shop 6', image: '/shop.png' },
-    { name: 'Shop 7', image: '/shop.png' },
-    { name: 'Shop 8', image: '/shop.png' },
+    { name: 'Shop 1', image: '/shop.png' ,key:'Shop 1'},
+    { name: 'Shop 2', image: '/shop.png' ,key:'Shop 2'},
+    { name: 'Shop 3', image: '/shop.png' ,key:'Shop 3'},
+    { name: 'Shop 4', image: '/shop.png' ,key:'Shop 4'},
+    { name: 'Shop 5', image: '/shop.png' ,key:'Shop 5'},
+    { name: 'Shop 6', image: '/shop.png' ,key:'Shop 6'},
+    { name: 'Shop 7', image: '/shop.png' ,key:'Shop 7'},
+    { name: 'Shop 8', image: '/shop.png' ,key:'Shop 8'},
   ];
 
   return (

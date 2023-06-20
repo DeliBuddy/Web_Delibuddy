@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 const RegistrationScreen = () => {
   return (
-    <div className="flex flex-col h-screen items-center bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4">
+    <div className="flex flex-col overflow-hidden h-screen items-center bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4">
        <div className='md:block hidden  ml-10  w-full'>
             <Image src="/home.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>

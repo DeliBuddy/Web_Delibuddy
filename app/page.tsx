@@ -1,10 +1,10 @@
 import Image from 'next/image'
-import {Hero,Registration,Login,Shop} from '@/components'
+import {Hero} from '@/app/pages'
 
 export default function Home() {
   return (
     <main className="overflow-hidden">
-     <Shop/>
+     <Hero/>
     </main>
   )
 }
