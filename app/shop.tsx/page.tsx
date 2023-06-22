@@ -15,7 +15,7 @@ const Shop = () => {
   return (
     <div className="bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4">
         <div className='md:block hidden  ml-10'>
-            <Image src="/home.png" width={100} height={100} alt="Home" className='rounded-xl' />
+            <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
         <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>

@@ -30,7 +30,7 @@ const Menu = () => {
   return (
     <div className="bg-[url('/bg.png')] md:h-screen overflow-hidden bg-cover bg-no-repeat bg-center items-center ">
          <div className='md:block hidden  ml-10  w-full mt-10'>
-            <Image src="/home.png" width={100} height={100} alt="Home" className='rounded-xl' />
+            <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
         <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
@@ -48,7 +48,8 @@ const Menu = () => {
           Checkout
         </button>
       </div>
-      <div className='font-inter font-bold  w-full flex justify-center mt-4 md:mt-16'>
+      <div className='font-inter font-bold  w-full flex justify-center mt-4 md:mt-16
+      '>
         Need help?&nbsp;<span className='font-inter font-bold text-[#E1573A]'> Contact us</span>
     </div>
       </div>
