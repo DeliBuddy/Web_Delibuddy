@@ -20,9 +20,9 @@ const items = [
   ];
   
 
-const Card = () => {
+const Cart= () => {
   return (
-    <div className="flex flex-col fixed inset-0 overflow-y-auto bg-[url('/bg.png')] md:h-screen overflow-hidden bg-cover bg-no-repeat bg-center items-center ">
+    <div className="flex flex-col fixed inset-0 overflow-y-auto bg-[url('/bg.png')] overflow-hidden bg-cover bg-no-repeat bg-center items-center ">
          <div className='md:block hidden  ml-10  w-full mt-4'>
             <Image src="/backbutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
@@ -123,4 +123,4 @@ const Card = () => {
   )
 }
 
-export default Card
+export default Cart
