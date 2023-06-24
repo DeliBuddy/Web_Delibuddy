@@ -6,10 +6,10 @@ const Checkout = () => {
     const [progress, setProgress] = useState(0);
   
     useEffect(() => {
-      const duration = 60; // 1 minute in seconds
+      const duration = 60; // seconds
       const interval = setInterval(() => {
-        setProgress((prevProgress) => prevProgress + 1);
-      }, duration * 1000 / 100); // Dividing duration into 100 parts for smoother animation
+        setProgress((prevProgress) => prevProgress + 0.1);
+      }, duration * 1000/1000); // miliseconds, divinding into 1000 parts
   
       return () => {
         clearInterval(interval);
@@ -19,7 +19,7 @@ const Checkout = () => {
     const indicatorStyle = {
       backgroundImage: `linear-gradient(to right, white ${progress}%, #E1573A  ${progress}%)`,
       height: '10px',
-      width: '100%', // Added width to make the indicator take up the full width
+      width: '100%', 
     };
   
     return (
