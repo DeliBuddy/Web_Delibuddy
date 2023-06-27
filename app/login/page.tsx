@@ -6,7 +6,8 @@ const LoginScreen = () => {
         <div className='md:block hidden  ml-10  w-full'>
             <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
-      <div className=" flex flex-col p-8 gap-2 rounded-xl shadow-lg bg-white bg-opacity-5 md:px-24 w-4/5 md:w-auto mt-[50px]">
+      
+      <div className=" flex flex-col p-8 gap-2 rounded-xl shadow-xl shadow-[#000000] bg-white bg-opacity-5  md:px-24 w-4/5 md:w-auto mt-[50px]">
       
         <p className=" font-bold mb-4 text-center text-[#E1573A] font-inter  text-[20px] md:text-[25px]">Welcome Back!</p>
         <p className="mb-8 md:mb-4 text-center w-100 md:w-80 font-inter text-[12px] md:text-[15px]">We missed you! Please enter your details</p>
