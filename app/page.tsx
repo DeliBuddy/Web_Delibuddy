@@ -1,12 +1,11 @@
 import Image from 'next/image'
-import {Hero,Menu,Cart,Checkout,Chat,Login} from '@/app/pages'
-
+import Chat from "@/app/chat/page";
 
 
 export default function Home() {
   return (
     <main className="overflow-hidden">
-     <Login/>
+     <Chat/>
     </main>
   )
 }

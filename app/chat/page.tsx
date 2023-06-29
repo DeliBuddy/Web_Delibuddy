@@ -8,7 +8,7 @@ const ChatScreen = () => {
     { id: 2, sender: false, text: 'Hi there!', color: 'white' },
   ]);
 
-//   const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleSendMessage = () => {
     if (message.trim() === '') return;
@@ -20,17 +20,19 @@ const ChatScreen = () => {
       color: '#E1573A',
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages([...messages,newMessage,]);
     setMessage('');
   };
 
-//   useEffect(() => {
-//     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-//   }, [messages]);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
-    <div className="bg-black text-white h-screen flex flex-col">
-      <div className="flex-grow flex flex-col p-8 overflow-auto">
+    <div className="flex flex-col overflow-hidden h-screen  bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4 ">
+      <div className="flex-grow flex flex-col p-8 overflow-auto" ref={messagesEndRef}>
         <div className="flex flex-col space-y-4">
           {messages.map((msg) => (
             <div
