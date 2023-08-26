@@ -2,9 +2,12 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; 
+
 const LoginScreen = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const handleSubmit = async (event:any) => {
     event.preventDefault();
@@ -25,6 +28,7 @@ const LoginScreen = () => {
 
       if (response.ok) {
         console.log('Login successful');
+        router.push('/shop');
       } else {
         console.log('Login failed');
       }

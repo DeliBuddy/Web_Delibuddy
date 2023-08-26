@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -12,6 +13,7 @@ const RegistrationScreen = () => {
   const snuIdRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
  
 
@@ -35,6 +37,7 @@ const RegistrationScreen = () => {
 
       if (response.ok) {
         console.log('Registration successful');
+        router.push('/login');
       } else {
         console.log(formData);
         console.error('Registration failed');

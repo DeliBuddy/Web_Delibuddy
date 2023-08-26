@@ -4,8 +4,8 @@ const PORT = process.env.PORT || 3696;
 const app = express();
 const cors = require("cors");
 app.use(cors());
-const DB = "mongodb+srv://dgdevanshi:medibuddy@medibuddycluster.bk3xmrr.mongodb.net/?retryWrites=true&w=majority"
-
+//const DB = "mongodb+srv://dgdevanshi:medibuddy@medibuddycluster.bk3xmrr.mongodb.net/?retryWrites=true&w=majority"
+const DB = "mongodb+srv://tm217:Tushar16@cluster0.aqzeo9l.mongodb.net/?retryWrites=true&w=majority"
 const authRouter = require("./auth");
 
 
