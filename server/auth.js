@@ -1,15 +1,15 @@
 const express = require('express');
 const authRouter = express.Router();
 const bcrypt = require('bcrypt'); 
-const UserModel = require('./models/user'); 
-
+const User = require('./models/user');
+const Seller = require('./models/seller');
 // POST route to register a new user
 authRouter.post('/register', async (req, res) => {
   try {
     const { name, snuId, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
-    const newUser = new UserModel({
+    const newUser = new Seller({
       name,
       snuId,
       password: hashedPassword,
@@ -22,11 +22,12 @@ authRouter.post('/register', async (req, res) => {
   }
 });
 
+
 authRouter.post('/login', async (req, res) => {
     try {
       const { email, password } = req.body;
       // Find the user by snuId
-      const user = await UserModel.findOne({snuId:email});
+      const user = await User.findOne({snuId:email});
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }

@@ -1,8 +1,7 @@
 'use client'
-
 import React,{useState} from 'react'
 import Image from 'next/image'
-
+import socketIOClient from 'socket.io-client';
 
 
 
@@ -23,12 +22,35 @@ const OrderDetail = () => {
     setOrderItems(updatedItems);
   };
 
-  const handleCheckout = (event:any) => {
-    console.log("Order:");
-    orderItems.forEach((item, index) => {
-      console.log(`Item ${index + 1}: ${item}`);
-    });
+  const handleCheckout = async (event:any) => {
     event.preventDefault();
+    console.log("Order:");
+   
+    const order={
+      user_id:"Tushar Mishra",
+      seller_id:"Mahesh",
+      items:orderItems,
+      status:"pending"
+    }
+
+    try{
+      const response = await fetch('http://localhost:3696/order/addOrder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(order),
+      });
+      if (response.ok) {
+        console.log('Order successful');
+      } else {
+        console.log('Order failed');
+      }
+    }catch(error){
+      console.error('Error sending order data', error);
+    }
+
+    
   };
   
   return (
@@ -36,7 +58,7 @@ const OrderDetail = () => {
          <div className='md:block hidden  ml-10  w-full mt-10'>
             <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
-        <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
+        <div className="md:hidden  font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
             <div className='mt-10'>Menu</div>
         </div>

@@ -17,7 +17,7 @@ const Shop = () => {
         <div className='md:block hidden  ml-10'>
             <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
-        <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
+        <div className="md:hidden  font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
             <div className='mt-10'>Home</div>
         </div>
