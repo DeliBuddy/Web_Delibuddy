@@ -2,13 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const PORT = process.env.PORT || 3696;
 const cors = require("cors");
-
-const socketIo = require('socket.io');
 const app = express();
 app.use(cors());
 const http = require('http');
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
 //const DB = "mongodb+srv://dgdevanshi:medibuddy@medibuddycluster.bk3xmrr.mongodb.net/?retryWrites=true&w=majority"
 const DB = "mongodb+srv://tm217:Tushar16@cluster0.aqzeo9l.mongodb.net/?retryWrites=true&w=majority"
@@ -39,9 +42,8 @@ mongoose
 // Listening
 
 io.on('connection', (socket) => {
-    console.log('Client connected to WebSocket');
     socket.on('joinSellerRoom', (sellerId) => {
-      console.log(`Seller with ID: ${sellerId} joined room`);
+      //console.log(`Seller with ID: ${sellerId} joined room`);
       socket.join(sellerId); // Join a room based on seller ID
     });
   

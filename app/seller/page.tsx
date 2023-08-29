@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import socketIOClient from 'socket.io-client';
+import {io} from 'socket.io-client';
 
 interface Order {
   _id: string;
@@ -15,9 +15,9 @@ interface OrderListProps {
   seller: string;
 }
 
-const OrderList: React.FC<OrderListProps> = () => {
+const Seller=() => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const socket = socketIOClient('http://localhost:3696'); // Replace with your WebSocket server URL
+  const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
 
   useEffect(() => {
     async function fetchOrders() {
@@ -42,9 +42,8 @@ const OrderList: React.FC<OrderListProps> = () => {
     socket.emit('joinSellerRoom', "Mahesh");
 
     socket.on('orderCreated', (newOrder: Order) => {
-      setOrders((prevOrders) => [...prevOrders, newOrder]);
-      console.log("new order created");
-      console.log(orders); // Note that this may not display the updated orders immediately
+      console.log(newOrder);
+      setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
     // Clean up the socket connection when component unmounts
@@ -53,18 +52,73 @@ const OrderList: React.FC<OrderListProps> = () => {
     };
   }, [socket]);
 
+  const handleAccept = async (orderId: string,seller_id:string) => {
+    const enteredAmount = prompt("Enter the amount:"); // Show prompt to seller
+    if (enteredAmount !== null) {
+      const amount = parseFloat(enteredAmount);
+      if (!isNaN(amount)) {
+        try {
+          
+          const response = await fetch(`http://localhost:3696/order/acceptOrder`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId,
+              amount,
+              seller_id
+            }),
+          });
+
+          if (response.ok) {
+            console.log('API call successful');
+          } else {
+            console.error('API call failed:', response.statusText);
+          }
+        } catch (error) {
+          console.error('API call error:', error);
+        }
+      } else {
+        console.error('Invalid amount entered');
+      }
+    }
+  };
+
+  const handleDeny = (orderId: string) => {
+    console.log('Denied order:', orderId);
+  };
+
   return (
-    <div>
-      <h2>Orders </h2>
-      <ul>
-        {orders.map((order) => (
-          <li key={order._id}>
-            {order.user_id} - {order.status}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <div className="flex flex-col mt-20 justify-center items-center  bg-red w-full">
+        <ul className='w-full '>
+          {orders.map((order) => (
+            
+           <div className='w-2/5 h-2/5 mx-auto bg-[#333333] mt-10 rounded-md p-3'>
+             <li key={order._id}>
+              <div >
+              {order.user_id}
+              </div>
+              <div>
+                Items:
+              </div>
+              {order.items.map((item) => (
+                <div key={item}>
+                  {item}
+                </div>
+              ))}
+              {order.status === 'pending' && (
+                <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
+                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id,order.seller_id)}>Accept</button>
+                  <button className="rounded-button" onClick={() => handleDeny(order._id)}>Deny</button>
+                </div>
+              )}
+            </li>
+           </div>
+          ))}
+        </ul>
+      </div>
   );
 };
 
-export default OrderList;
+export default Seller;

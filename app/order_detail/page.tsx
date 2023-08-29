@@ -2,8 +2,7 @@
 import React,{useState} from 'react'
 import Image from 'next/image'
 import socketIOClient from 'socket.io-client';
-
-
+import { useRouter } from 'next/navigation';
 
 
   
@@ -11,7 +10,7 @@ import socketIOClient from 'socket.io-client';
 
 const OrderDetail = () => {
   const [orderItems, setOrderItems] = useState<string[]>(['']);
-
+  const router = useRouter();
   const addOrderItem = () => {
     setOrderItems([...orderItems, '']);
   };
@@ -43,6 +42,7 @@ const OrderDetail = () => {
       });
       if (response.ok) {
         console.log('Order successful');
+        router.push('/availibility');
       } else {
         console.log('Order failed');
       }

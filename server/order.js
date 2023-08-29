@@ -46,4 +46,29 @@ orderRouter.get('/getOrders', async (req, res) => {
     }
   });
 
+  orderRouter.post('/acceptOrder', async (req, res) => {
+    const { orderId, amount,seller_id } = req.body;
+  
+    try {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        console.log('Order not found');
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+     
+      order.status = 'accepted';
+      order.total_price = amount;
+      const updatedOrder = await order.save();
+      // Emit an event to notify clients about the order update
+      const io = req.app.get('io');
+      io.to("Mahesh").emit('updatedOrder', updatedOrder);
+     
+      res.status(200).json(updatedOrder);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to accept order' });
+    }
+  });
+
 module.exports = orderRouter;
