@@ -8,7 +8,7 @@ import Availibility from './availibility/page';
 import Seller from './seller/page';
 
 export default function Home() {
-  return (
+  return (    
     <main className="overflow-hidden">
      <Hero/>
     </main>

@@ -3,10 +3,13 @@ import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; 
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/app/userSlice';
 
 const LoginScreen = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const handleSubmit = async (event:any) => {
@@ -16,7 +19,6 @@ const LoginScreen = () => {
       email: emailRef.current!.value,
       password: passwordRef.current!.value,
     };
-    console.log(formData);
     try {
       const response = await fetch('http://localhost:3696/auth/login', {
         method: 'POST',
@@ -28,7 +30,14 @@ const LoginScreen = () => {
 
       if (response.ok) {
         console.log('Login successful');
-        router.push('/shop');
+        
+        const { user } = await response.json();
+        dispatch(setUser(user));
+        if (user.type === 'user') {
+          router.push('/shop');
+        } else if (user.type === 'seller') {
+          router.push('/seller');
+        } 
       } else {
         console.log('Login failed');
       }

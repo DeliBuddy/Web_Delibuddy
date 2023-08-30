@@ -1,22 +1,21 @@
 const mongoose = require('mongoose');
+import User from './user';
+import Seller from './seller';
 
 const orderSchema = new mongoose.Schema({
-  user_id: {
-    type:String,
-    // type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
-  seller_id: {
-    type:String,
-    // type: mongoose.Schema.Types.ObjectId,
-    ref: 'Seller'
-  },
-  partner_id: {
-    type:String,
-    default:null,
-    // type: mongoose.Schema.Types.ObjectId,
-    ref: 'Partner'
-  },
+ user : {
+  type:Map,
+  of: User,
+ },
+seller:{
+  type:Map,
+  of:Seller
+},
+partner: {
+  type:Map,
+  of: User,
+  default:null
+ },
   items: [String],
   total_price: {
     type: Number,

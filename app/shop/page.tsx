@@ -1,6 +1,13 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
+import {useSelector} from 'react-redux';
+import {RootState} from '@/app/store';
+
 const Shop = () => {
+  // const user=useSelector((state:RootState)=>state.user.user);
+  // console.log(user);
+
   const shops = [
     { name: 'Shop 1', image: '/shop.png' ,key:'Shop 1'},
     { name: 'Shop 2', image: '/shop.png' ,key:'Shop 2'},

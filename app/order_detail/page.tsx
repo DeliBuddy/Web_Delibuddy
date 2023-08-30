@@ -1,7 +1,8 @@
 'use client'
 import React,{useState} from 'react'
 import Image from 'next/image'
-import socketIOClient from 'socket.io-client';
+import {useSelector} from 'react-redux';
+import {RootState} from '@/app/store';
 import { useRouter } from 'next/navigation';
 
 
@@ -11,6 +12,11 @@ import { useRouter } from 'next/navigation';
 const OrderDetail = () => {
   const [orderItems, setOrderItems] = useState<string[]>(['']);
   const router = useRouter();
+  
+  //user and seller should be Typescript compatible
+  const user= useSelector((state:RootState)=>state.user.user);
+  const seller= useSelector((state:RootState)=>state.seller.seller);
+
   const addOrderItem = () => {
     setOrderItems([...orderItems, '']);
   };
@@ -26,11 +32,13 @@ const OrderDetail = () => {
     console.log("Order:");
    
     const order={
-      user_id:"Tushar Mishra",
-      seller_id:"Mahesh",
+      user:user,
+      seller:seller,
       items:orderItems,
       status:"pending"
     }
+
+    console.log(order);
 
     try{
       const response = await fetch('http://localhost:3696/order/addOrder', {
