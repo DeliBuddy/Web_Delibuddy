@@ -19,29 +19,29 @@ const Partner=() => {
   const [orders, setOrders] = useState<Order[]>([]);
   const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
 
-  useEffect(() => {
-    async function fetchOrders() {
-      try {
-        const response = await fetch(`http://localhost:3696/order/getOrders?seller=Mahesh`);
-        if (response.ok) {
-          const data = await response.json();
-          setOrders(data);
-        } else {
-          console.error('Error fetching orders:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchOrders() {
+  //     try {
+  //       const response = await fetch(`http://localhost:3696/order/getOrders?seller=Mahesh`);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setOrders(data);
+  //       } else {
+  //         console.error('Error fetching orders:', response.statusText);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching orders:', error);
+  //     }
+  //   }
 
-    fetchOrders();
-  }, []);
+  //   fetchOrders();
+  // }, []);
 
   // Set up real-time event listener
   useEffect(() => {
-    socket.emit('joinSellerRoom', "Mahesh");
+    socket.emit('joinPartnerRoom');
 
-    socket.on('orderCreated', (newOrder: Order) => {
+    socket.on('newOrder', (newOrder: Order) => {
       console.log(newOrder);
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
@@ -50,47 +50,35 @@ const Partner=() => {
     return () => {
       socket.disconnect();
     };
-  }, [socket]);
+  }, []);
 
-  const handleAccept = async (orderId: string,seller_id:string) => {
-    const enteredAmount = prompt("Enter the amount:"); // Show prompt to seller
-    if (enteredAmount !== null) {
-      const amount = parseFloat(enteredAmount);
-      if (!isNaN(amount)) {
-        try {
-          
-          const response = await fetch(`http://localhost:3696/order/acceptOrder`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              orderId,
-              amount,
-              seller_id
-            }),
-          });
+  const handleAccept = async (orderId: string) => {
+    try {
+      const response = await fetch('http://localhost:3696/partner/acceptOrder', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId
+        }),
+      });
 
-          if (response.ok) {
-            console.log('API call successful');
-          } else {
-            console.error('API call failed:', response.statusText);
-          }
-        } catch (error) {
-          console.error('API call error:', error);
-        }
+      if (response.ok) {
+        console.log('API call successful');
       } else {
-        console.error('Invalid amount entered');
+        console.error('API call failed:', response.statusText);
       }
+    } catch (error) {
+      console.error('API call error:', error);
     }
   };
 
-  const handleDeny = (orderId: string) => {
-    console.log('Denied order:', orderId);
-  };
+ 
 
   return (
     <div className="flex flex-col mt-20 justify-center items-center  bg-red w-full">
+        <div> Partners</div>
         <ul className='w-full '>
           {orders.map((order) => (
             
@@ -107,12 +95,10 @@ const Partner=() => {
                   {item}
                 </div>
               ))}
-              {order.status === 'pending' && (
+              
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id,order.seller_id)}>Accept</button>
-                  <button className="rounded-button" onClick={() => handleDeny(order._id)}>Deny</button>
+                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id)}>Accept</button>
                 </div>
-              )}
             </li>
            </div>
           ))}

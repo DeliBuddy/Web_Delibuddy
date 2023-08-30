@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import Image from 'next/image'
 import {useRouter} from 'next/navigation'
@@ -25,7 +26,7 @@ const Cart= () => {
   const router = useRouter();
   const handlePay = async () => {
     try {
-      const response = await fetch('/partner/sendOrderToPartner', {
+      const response = await fetch('http://localhost:3696/partner/sendOrderToPartner', {
         method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ const Cart= () => {
       console.error('API call error:', error);
     }
   };
-  }
+  
 
   return (
     <div className="flex flex-col fixed inset-0 overflow-y-auto bg-[url('/bg.png')] overflow-hidden bg-cover bg-no-repeat bg-center items-center ">

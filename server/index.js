@@ -19,6 +19,7 @@ const DB = "mongodb+srv://tm217:Tushar16@cluster0.aqzeo9l.mongodb.net/?retryWrit
 
 const authRouter = require("./auth");
 const orderRouter = require("./order");
+const partnerRouter = require("./partner");
 
 // middleware
 
@@ -27,6 +28,8 @@ app.use(express.json());
 app.set('io', io);
 app.use("/auth", authRouter);
 app.use("/order", orderRouter);
+app.use("/partner", partnerRouter);
+
 
 // Connections
 mongoose.set("strictQuery", false);
@@ -43,9 +46,12 @@ mongoose
 
 io.on('connection', (socket) => {
     socket.on('joinSellerRoom', (sellerId) => {
-      //console.log(`Seller with ID: ${sellerId} joined room`);
-      socket.join(sellerId); // Join a room based on seller ID
+      socket.join(sellerId);
     });
+
+    socket.on('joinPartnerRoom',()=>{
+      socket.join('joinPartnerRoom');//broadcast room for all partners
+    })
   
     socket.on('disconnect', () => {
       const rooms = Object.keys(socket.rooms);

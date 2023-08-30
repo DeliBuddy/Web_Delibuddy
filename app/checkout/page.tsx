@@ -5,21 +5,21 @@ const Checkout = () => {
   const [progress, setProgress] = useState(0);
   const [timerEnded, setTimerEnded] = useState(false);
 
-  useEffect(() => {
-    const duration = 10; // seconds
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => prevProgress + 0.1);
-    }, (duration * 1000) / 1000);
+  // useEffect(() => {
+  //   const duration = 10; // seconds
+  //   const interval = setInterval(() => {
+  //     setProgress((prevProgress) => prevProgress + 0.1);
+  //   }, (duration * 1000) / 1000);
 
-    setTimeout(() => {
-      clearInterval(interval);
-      setTimerEnded(true);
-    }, duration * 1000);
+  //   setTimeout(() => {
+  //     clearInterval(interval);
+  //     setTimerEnded(true);
+  //   }, duration * 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   const indicatorStyle = {
     backgroundImage: `linear-gradient(to right, white ${progress}%, #E1573A  ${progress}%)`,
