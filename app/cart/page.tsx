@@ -1,6 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
-
+import {useRouter} from 'next/navigation'
 const items = [
     {
       name: 'Paneer Kathi Roll',
@@ -18,9 +18,35 @@ const items = [
       price: 80,
     },
   ];
+
   
 
 const Cart= () => {
+  const router = useRouter();
+  const handlePay = async () => {
+    try {
+      const response = await fetch('/partner/sendOrderToPartner', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: '64edad244e39a37ef6bce205'
+        }),
+      });
+
+      if (response.ok) {
+        console.log('API call successful');
+        router.push('/checkout'); // Navigate to checkout page
+      } else {
+        console.error('API call failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('API call error:', error);
+    }
+  };
+  }
+
   return (
     <div className="flex flex-col fixed inset-0 overflow-y-auto bg-[url('/bg.png')] overflow-hidden bg-cover bg-no-repeat bg-center items-center ">
          <div className='md:block hidden  ml-10  w-full mt-4'>
@@ -115,7 +141,7 @@ const Cart= () => {
             </div>
 
             
-        <button className=" w-full bg-[#E1573A] font-inter font-extrabold rounded-lg px-16 md:px-10 py-3 mt-10 text-[18px] mb-4">
+        <button className=" w-full bg-[#E1573A] font-inter font-extrabold rounded-lg px-16 md:px-10 py-3 mt-10 text-[18px] mb-4" onClick={handlePay}>
          Proceed to Pay
         </button>
         </div>

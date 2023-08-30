@@ -10,7 +10,7 @@ import Seller from './seller/page';
 export default function Home() {
   return (
     <main className="overflow-hidden">
-     <Cart/>
+     <Hero/>
     </main>
   )
 }

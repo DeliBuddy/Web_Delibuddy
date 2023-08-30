@@ -22,7 +22,7 @@ const RegistrationScreen = () => {
 
     const formData = {
       name: nameRef.current!.value,
-      snuId: snuIdRef.current!.value,
+      email: snuIdRef.current!.value,
       password: passwordRef.current!.value,
     };
     

@@ -3,15 +3,16 @@ const authRouter = express.Router();
 const bcrypt = require('bcrypt'); 
 const User = require('./models/user');
 const Seller = require('./models/seller');
+const Partner = require('./models/partner');
 // POST route to register a new user
 authRouter.post('/register', async (req, res) => {
   try {
-    const { name, snuId, password } = req.body;
+    const { name, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
-    const newUser = new Seller({
+    const newUser = new Partner({
       name,
-      snuId,
+      email,
       password: hashedPassword,
     });
 
