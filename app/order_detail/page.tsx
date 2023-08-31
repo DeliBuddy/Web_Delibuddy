@@ -4,14 +4,14 @@ import Image from 'next/image'
 import {useSelector} from 'react-redux';
 import {RootState} from '@/app/store';
 import { useRouter } from 'next/navigation';
-
-
-  
-
+import {Order} from '@/app/orderSlice';
+import { useDispatch } from 'react-redux';
+import {setOrder} from '@/app/orderSlice';
 
 const OrderDetail = () => {
-  const [orderItems, setOrderItems] = useState<string[]>(['']);
+  const [orderItems, setOrderItems] = useState<string[]>([]);
   const router = useRouter();
+  const dispatch = useDispatch();
   
   //user and seller should be Typescript compatible
   const user= useSelector((state:RootState)=>state.user.user);
@@ -23,22 +23,20 @@ const OrderDetail = () => {
 
   const handleOrderItemChange = (index: number, value: string) => {
     const updatedItems = [...orderItems];
-    updatedItems[index] = value;
+    updatedItems[index]=value;
     setOrderItems(updatedItems);
   };
 
   const handleCheckout = async (event:any) => {
     event.preventDefault();
-    console.log("Order:");
    
-    const order={
+    const orderData={
       user:user,
       seller:seller,
       items:orderItems,
       status:"pending"
     }
 
-    console.log(order);
 
     try{
       const response = await fetch('http://localhost:3696/order/addOrder', {
@@ -46,10 +44,11 @@ const OrderDetail = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(order),
+        body: JSON.stringify(orderData),
       });
       if (response.ok) {
-        console.log('Order successful');
+        const order:Order = await response.json();
+        dispatch(setOrder(order));
         router.push('/availibility');
       } else {
         console.log('Order failed');
@@ -62,15 +61,14 @@ const OrderDetail = () => {
   };
   
   return (
-    <div className="bg-[url('/bg.png')] md:h-screen overflow-hidden bg-cover bg-no-repeat bg-center items-center ">
+    <div className="bg-[url('/bg.png')] md:h-screen overflow-hidden bg-cover bg-no-repeat bg-center items-center h-[100vh]">
          <div className='md:block hidden  ml-10  w-full mt-10'>
             <Image src="/homebutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
         <div className="md:hidden  font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
-            <div className='mt-10'>Menu</div>
         </div>
-        <form className="flex flex-col space-y-6 mt-2  items-center justify-center w-auto" >
+        <form className="flex flex-col space-y-6 mt-20 md:mt-2  items-center justify-center w-auto" >
         {orderItems.map((item, index) => (
           <div key={index} className="flex flex-col items-center w-1/2">
             <input

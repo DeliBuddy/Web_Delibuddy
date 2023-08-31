@@ -1,48 +1,35 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import {io} from 'socket.io-client';
+import {Order} from '@/app/orderSlice';
 
-interface Order {
-  _id: string;
-  user_id: string;
-  seller_id: string;
-  items: string[];
-  total_price: number | null;
-  status: string;
-}
-
-interface OrderListProps {
-  seller: string;
-}
 
 const Partner=() => {
   const [orders, setOrders] = useState<Order[]>([]);
   const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
 
-  // useEffect(() => {
-  //   async function fetchOrders() {
-  //     try {
-  //       const response = await fetch(`http://localhost:3696/order/getOrders?seller=Mahesh`);
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setOrders(data);
-  //       } else {
-  //         console.error('Error fetching orders:', response.statusText);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching orders:', error);
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const response = await fetch(`http://localhost:3696/partner/getOrders?`);
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data);
+        } else {
+          console.error('Error fetching orders:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    }
 
-  //   fetchOrders();
-  // }, []);
-
-  // Set up real-time event listener
+    fetchOrders();
+  }, []);
+  
   useEffect(() => {
     socket.emit('joinPartnerRoom');
 
     socket.on('newOrder', (newOrder: Order) => {
-      console.log(newOrder);
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
@@ -85,7 +72,7 @@ const Partner=() => {
            <div className='w-2/5 h-2/5 mx-auto bg-[#333333] mt-10 rounded-md p-3'>
              <li key={order._id}>
               <div >
-              {order.user_id}
+              {order.user._id}
               </div>
               <div>
                 Items:

@@ -3,13 +3,10 @@ const Order = require('./models/order');
 const partnerRouter = express.Router();
 
 partnerRouter.post('/sendOrderToPartner', async (req, res) => {
-    const { orderId } = req.body;
+    const { order } = req.body;
     const io = req.app.get('io');
     
     try {
-        //remove the below line, orderDetails would be sent from user side
-        //using statemanagement techniques, not retrived with Mongodb evertime
-        const order=await Order.findById(orderId);
         io.to('joinPartnerRoom').emit('newOrder',order);
         res.status(200).json(order);
     } catch (error) {
@@ -36,4 +33,34 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
         }
 
     });
+
+    // useEffect(() => {
+    //     async function fetchOrders() {
+    //       try {
+    //         const response = await fetch(`http://localhost:3696/partner/getOrders?`);
+    //         if (response.ok) {
+    //           const data = await response.json();
+    //           setOrders(data);
+    //         } else {
+    //           console.error('Error fetching orders:', response.statusText);
+    //         }
+    //       } catch (error) {
+    //         console.error('Error fetching orders:', error);
+    //       }
+    //     }
+    
+    //     fetchOrders();
+    //   }, []);   
+    // write api for the above frontend code
+    partnerRouter.get('/getOrders', async (req, res) => {
+
+        try {
+            const orders = await Order.find({ status: 'accepted' });
+            res.status(200).json(orders);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Failed to create order' });
+        }
+    });
+
 module.exports = partnerRouter;

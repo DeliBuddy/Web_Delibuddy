@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 const RegistrationScreen = () => {
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const snuIdRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -18,13 +18,15 @@ const RegistrationScreen = () => {
  
 
   const handleSubmit = async (event:any) => {
-    event.preventDefault();
+   event.preventDefault();
 
     const formData = {
       name: nameRef.current!.value,
-      email: snuIdRef.current!.value,
+      email:emailRef.current!.value,
       password: passwordRef.current!.value,
     };
+
+    console.log(formData)
     
     try {
       const response = await fetch('http://localhost:3696/auth/register', {
@@ -39,7 +41,7 @@ const RegistrationScreen = () => {
         console.log('Registration successful');
         router.push('/login');
       } else {
-        console.log(formData);
+        console.log(response.body);
         console.error('Registration failed');
       }
     } catch (error) {
@@ -73,13 +75,13 @@ const RegistrationScreen = () => {
             />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="snuId" className="text-sm mb-1">
+            <label htmlFor="email" className="text-sm mb-1">
               SNU Email ID
             </label>
             <input
-              id="snuId"
+              id="email"
               type="text"
-              ref={snuIdRef}
+              ref={emailRef}
               placeholder="Enter your SNU ID"
               className="px-4 py-2 bg-transparent rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[12px] md:text-[16px]"
             />

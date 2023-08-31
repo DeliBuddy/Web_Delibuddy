@@ -2,6 +2,8 @@
 import React from 'react'
 import Image from 'next/image'
 import {useRouter} from 'next/navigation'
+import {useSelector} from 'react-redux';
+import {RootState} from '@/app/store';
 const items = [
     {
       name: 'Paneer Kathi Roll',
@@ -24,6 +26,7 @@ const items = [
 
 const Cart= () => {
   const router = useRouter();
+  const order= useSelector((state:RootState)=>state.order.order);
   const handlePay = async () => {
     try {
       const response = await fetch('http://localhost:3696/partner/sendOrderToPartner', {
@@ -32,7 +35,7 @@ const Cart= () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: '64edad244e39a37ef6bce205'
+          order
         }),
       });
 
@@ -135,7 +138,7 @@ const Cart= () => {
                 
             </p>
             <p className='text-center' style={{width:'55%'}}>
-                340
+                {order.total_price}
             </p>
             </div>
            

@@ -4,13 +4,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; 
 import { useDispatch } from 'react-redux';
-import { setUser } from '@/app/userSlice';
-import {setSeller} from '@/app/sellerSlice';
-import {User} from '@/app/userSlice';
-import {Seller} from '@/app/sellerSlice';
+import { setUser,User } from '@/app/userSlice';
 
 
-const LoginScreen = () => {
+const LoginDelibuddy = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const dispatch = useDispatch();
@@ -35,26 +32,13 @@ const LoginScreen = () => {
       if (response.ok) {
         console.log('Login successful');
         const { user } = await response.json();
-        if (user.type === 'user') {
           const userData:User={
             _id:user._id,
             name:user.name,
             email:user.email,
           }
           dispatch(setUser(userData));
-          router.push('/shop');
-        } else if (user.type === 'seller') {
-
-          const sellerData:Seller={
-            _id:user._id,
-            name:user.name,
-            email:user.email,
-            orders:user.orders,
-          }
-  
-          dispatch(setSeller(sellerData));
-          router.push('/seller');
-        } 
+          router.push('/partner'); 
       } else {
         console.log('Login failed');
       }
@@ -122,14 +106,10 @@ const LoginScreen = () => {
          <Link href='/registration'>Sign up</Link> </span>
         </p>
 
-        <p className="text-center  text-white font-inter mt-4  font-bold text-[12px] md:text-[16px]">
-          Login as Delibuddy? <span className="text-[#4356FF]"> 
-          
-         <Link href='/login/delibuddy'>Click Here</Link> </span>
-        </p>
+      
       </div>
     </div>
   );
 };
 
-export default LoginScreen;
+export default LoginDelibuddy;

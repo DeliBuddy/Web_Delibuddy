@@ -2,9 +2,25 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-    seller: null,
-};
+export interface Seller {
+    _id: string;
+    name: string;
+    email: string;
+    orders: string[];
+  }
+  
+  interface SellerState {
+    seller:Seller ;
+  }
+  
+  const initialState: SellerState = {
+    seller: {
+        _id: '',
+        name: '',
+        email: '',
+        orders: [],
+    },
+  };
 
 const sellerSlice = createSlice({
     name: 'seller',

@@ -20,7 +20,7 @@ const DB = "mongodb+srv://tm217:Tushar16@cluster0.aqzeo9l.mongodb.net/?retryWrit
 const authRouter = require("./auth");
 const orderRouter = require("./order");
 const partnerRouter = require("./partner");
-
+const sellerRouter =require("./seller");
 // middleware
 
 app.use(express.json());
@@ -29,6 +29,7 @@ app.set('io', io);
 app.use("/auth", authRouter);
 app.use("/order", orderRouter);
 app.use("/partner", partnerRouter);
+app.use("/seller",sellerRouter);
 
 
 // Connections

@@ -7,20 +7,20 @@ const Seller = require('./models/seller'); // Update the path to your Seller mod
 
 
 orderRouter.post('/addOrder', async (req, res) => {
-  const { user_id, seller_id, items, status } = req.body;
+  const { user, seller, items, status } = req.body;
   const io = req.app.get('io');
 
 
   try {
     const newOrder = new Order({
-      user_id,
-      seller_id,
+      user,
+      seller,
       items,
       status
     });
 
     const savedOrder = await newOrder.save();
-    io.to(seller_id).emit('orderCreated', savedOrder);
+    io.to(seller._id).emit('orderCreated', savedOrder);
     res.status(200).json(savedOrder);
   } catch (error) {
     console.log(error);
@@ -47,7 +47,7 @@ orderRouter.get('/getOrders', async (req, res) => {
   });
 
   orderRouter.post('/acceptOrder', async (req, res) => {
-    const { orderId, amount,seller_id } = req.body;
+    const { orderId, amount,sellerId } = req.body;
   
     try {
       const order = await Order.findById(orderId);
@@ -62,7 +62,7 @@ orderRouter.get('/getOrders', async (req, res) => {
       const updatedOrder = await order.save();
       // Emit an event to notify clients about the order update
       const io = req.app.get('io');
-      io.to("Mahesh").emit('updatedOrder', updatedOrder);
+      io.to(sellerId).emit('updatedOrder', updatedOrder);
      
       res.status(200).json(updatedOrder);
     } catch (error) {

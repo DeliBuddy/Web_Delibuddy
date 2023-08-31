@@ -1,9 +1,24 @@
 'use client';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  user: null, 
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+interface UserState {
+  user: User ;
+}
+
+const initialState: UserState = {
+  user: {
+    _id: '',
+    name: '',
+    email: '',
+  },
 };
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -13,7 +28,11 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     clearUser: (state) => {
-      state.user = null;
+      state.user = {
+        _id: '',
+        name: '',
+        email: '',
+      };
     },
   },
 });

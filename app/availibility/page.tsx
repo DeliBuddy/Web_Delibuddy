@@ -2,37 +2,40 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useRouter } from 'next/navigation';
-
-
-
+import {useSelector} from 'react-redux';
+import {RootState} from '@/app/store';
+import { useDispatch } from 'react-redux';
+import {setOrder} from '@/app/orderSlice';
 const Availibility = () => {
   const [progress, setProgress] = useState(0);
   const [timerEnded, setTimerEnded] = useState(false);
   const router = useRouter();
-  useEffect(() => {
-    const duration = 60; // seconds
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => prevProgress + 0.1);
-    }, (duration * 1000) / 1000);
+  const order= useSelector((state:RootState)=>state.order.order);
+  const dispatch=useDispatch();
+  // useEffect(() => {
+  //   const duration = 60; // seconds
+  //   const interval = setInterval(() => {
+  //     setProgress((prevProgress) => prevProgress + 0.1);
+  //   }, (duration * 1000) / 1000);
 
-    setTimeout(() => {
-      clearInterval(interval);
-      setTimerEnded(true);
-    }, duration * 1000);
+  //   setTimeout(() => {
+  //     clearInterval(interval);
+  //     setTimerEnded(true);
+  //   }, duration * 1000);
     
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   useEffect(() => {  
     const socket = io('http://localhost:3696');
     
-  socket.emit('joinSellerRoom', 'Mahesh');
+  socket.emit('joinSellerRoom',order.seller._id);
   
   socket.on('updatedOrder', (updatedOrder) => {
-      console.log(updatedOrder);
+      dispatch(setOrder(updatedOrder));
       router.push('/cart');
     });
 
