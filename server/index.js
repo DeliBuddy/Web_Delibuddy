@@ -51,8 +51,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('joinPartnerRoom',()=>{
-      socket.join('joinPartnerRoom');//broadcast room for all partners
-    })
+      socket.join('joinPartnerRoom');
+    });
+
+    socket.on('joinChatRoom',(orderId)=>{
+      console.log(`Joined room: ${orderId}`);
+      socket.join(orderId);
+    });
   
     socket.on('disconnect', () => {
       const rooms = Object.keys(socket.rooms);

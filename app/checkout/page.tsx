@@ -1,9 +1,37 @@
 "use client"
 import React, { useEffect, useState } from 'react';
+import {useSelector} from 'react-redux';
+import { io } from 'socket.io-client';
+import {RootState} from '@/app/store';
+import {useRouter} from 'next/navigation';
+import {setOrder,Order} from '@/app/orderSlice';
+import { useDispatch } from 'react-redux';
 
 const Checkout = () => {
   const [progress, setProgress] = useState(0);
   const [timerEnded, setTimerEnded] = useState(false);
+  const router = useRouter();
+  const order= useSelector((state:RootState)=>state.order.order);
+  const dispatch=useDispatch();
+  
+  useEffect(() => {  
+    const socket = io('http://localhost:3696');
+  socket.emit('joinChatRoom',order._id);
+  
+  socket.on('orderAccepted', (updatedOrder:Order) => {
+      setTimerEnded(true);
+      dispatch(setOrder(updatedOrder));
+      //send boolean variable to next page
+      router.push(
+        '/chat',
+         { user: true },
+);
+    });
+
+    return()=> {
+      socket.disconnect();
+    };
+  }, []);
 
   // useEffect(() => {
   //   const duration = 10; // seconds

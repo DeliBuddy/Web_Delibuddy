@@ -56,7 +56,7 @@ const Cart= () => {
          <div className='md:block hidden  ml-10  w-full mt-4'>
             <Image src="/backbutton.png" width={100} height={100} alt="Home" className='rounded-xl' />
         </div>
-        <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
+        <div className="md:hidden font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
         </div>
         <div className='flex flex-col mx-auto mt-10 w-3/4 md:w-1/3'>

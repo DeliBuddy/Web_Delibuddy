@@ -1,12 +1,26 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image'
-const ChatScreen = () => {
+import {useSelector} from 'react-redux';
+import { io } from 'socket.io-client';
+import {RootState} from '@/app/store';
+
+
+
+const ChatScreen = (props:{user:boolean}) => {
+  const isUser=props.user;
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    { id: 1, sender: true, text: 'Hello!', color: '#E1573A' },
-    { id: 2, sender: false, text: 'Hi there!', color: 'white' },
+    { id: 1, user: true, text: 'Hello!'},
+    // { id: 1, user: true, text: 'Hello!', color: '#E1573A' },
+    // { id: 2, user: false, text: 'Hi there!', color: 'white' },
   ]);
+  const order= useSelector((state:RootState)=>state.order.order);
+  const socket = io('http://localhost:3696');
+  socket.emit('joinChatRoom',order._id);
+ 
+  //both users and partners will join the chat room
+  
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -15,14 +29,41 @@ const ChatScreen = () => {
 
     const newMessage = {
       id: messages.length + 1,
-      sender: true,
+      user: isUser,
       text: message,
-      color: '#E1573A',
     };
+
+    if(isUser){
+      socket.emit('userMessage',newMessage);
+    }
+    else{
+      socket.emit('partnerMessage',newMessage);
+    }
 
     setMessages([...messages,newMessage,]);
     setMessage('');
   };
+
+
+  useEffect(() => {  
+    
+  if(isUser){
+    socket.on('partnerMessage', (message) => {
+      setMessages([...messages,message]);
+    }
+    );
+  }
+  else{
+    socket.on('userMessage', (message) => {
+      setMessages([...messages,message]);
+    }
+    );
+  }
+
+    return()=> {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -45,12 +86,12 @@ const ChatScreen = () => {
             <div
               key={msg.id}
               className={`flex items-start space-x-2 ${
-                msg.sender ? 'justify-end' : 'justify-start'
+                msg.user ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
                 className={`p-4 rounded-lg ${
-                  !msg.sender
+                  msg.user===isUser
                     ? 'bg-[#E1573A] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px]'
                     : 'bg-white text-black rounded-tl-[20px] rounded-br-[20px] rounded-bl-[20px]'
                 }`}

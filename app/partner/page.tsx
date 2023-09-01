@@ -1,13 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import {io} from 'socket.io-client';
-import {Order} from '@/app/orderSlice';
-
-
+import { useDispatch } from 'react-redux';
+import {setOrder,Order} from '@/app/orderSlice';
+import {useRouter} from 'next/navigation';
 const Partner=() => {
   const [orders, setOrders] = useState<Order[]>([]);
   const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
-
+  const dispatch= useDispatch();
+  const router=useRouter();
   useEffect(() => {
     async function fetchOrders() {
       try {
@@ -39,7 +40,7 @@ const Partner=() => {
     };
   }, []);
 
-  const handleAccept = async (orderId: string) => {
+  const handleAccept = async (order:Order) => {
     try {
       const response = await fetch('http://localhost:3696/partner/acceptOrder', {
         method: 'POST', 
@@ -47,11 +48,18 @@ const Partner=() => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: orderId
+          order
         }),
       });
 
       if (response.ok) {
+        const order:Order=await response.json();
+
+        dispatch(setOrder(order));
+        router.push(
+          '/chat',
+           { user: false},
+  );
         console.log('API call successful');
       } else {
         console.error('API call failed:', response.statusText);
@@ -84,7 +92,7 @@ const Partner=() => {
               ))}
               
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id)}>Accept</button>
+                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order)}>Accept</button>
                 </div>
             </li>
            </div>

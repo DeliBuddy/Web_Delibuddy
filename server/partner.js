@@ -18,14 +18,15 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
    
 
     partnerRouter.post('/acceptOrder', async (req, res) => {
-        const { orderId } = req.body;
+        const { order } = req.body;
         const io = req.app.get('io');
         try {
-            const order=await Order.findById(orderId);
-            order.status='forwarded';
-            await order.save();
+            const newOrder=await Order.findById(order._id);
+            newOrder.status='forwarded';
+            await newOrder.save();
             //send message to user and redirect to chat page
-            res.status(200).json(order);
+            io.to(order._id).emit('orderAccepted',newOrder);
+            res.status(200).json(newOrder);
         }
         catch (error) {
             console.log(error);

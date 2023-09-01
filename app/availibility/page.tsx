@@ -12,6 +12,7 @@ const Availibility = () => {
   const router = useRouter();
   const order= useSelector((state:RootState)=>state.order.order);
   const dispatch=useDispatch();
+  
   // useEffect(() => {
   //   const duration = 60; // seconds
   //   const interval = setInterval(() => {
