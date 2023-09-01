@@ -21,6 +21,7 @@ const authRouter = require("./auth");
 const orderRouter = require("./order");
 const partnerRouter = require("./partner");
 const sellerRouter =require("./seller");
+const chatRouter = require("./chat");
 // middleware
 
 app.use(express.json());
@@ -30,7 +31,7 @@ app.use("/auth", authRouter);
 app.use("/order", orderRouter);
 app.use("/partner", partnerRouter);
 app.use("/seller",sellerRouter);
-
+app.use("/chat",chatRouter);
 
 // Connections
 mongoose.set("strictQuery", false);
@@ -54,8 +55,7 @@ io.on('connection', (socket) => {
       socket.join('joinPartnerRoom');
     });
 
-    socket.on('joinChatRoom',(orderId)=>{
-      console.log(`Joined room: ${orderId}`);
+    socket.on('joinChatRoom',(orderId,userType)=>{
       socket.join(orderId);
     });
   

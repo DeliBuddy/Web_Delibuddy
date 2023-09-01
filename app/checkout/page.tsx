@@ -22,9 +22,9 @@ const Checkout = () => {
       setTimerEnded(true);
       dispatch(setOrder(updatedOrder));
       //send boolean variable to next page
+      
       router.push(
-        '/chat',
-         { user: true },
+        '/chat?user=true',
 );
     });
 

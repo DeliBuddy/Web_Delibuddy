@@ -4,57 +4,95 @@ import Image from 'next/image'
 import {useSelector} from 'react-redux';
 import { io } from 'socket.io-client';
 import {RootState} from '@/app/store';
+import { useSearchParams } from 'next/navigation';
+// extract the below user variable from the router object
+// router.push(
+//   '/chat',
+//    { user: true },
+// );
+// });
+
+interface Message {
+  id: number,
+  user: string,
+  text: string|undefined,
+}
 
 
+const ChatScreen = () => {
 
-const ChatScreen = (props:{user:boolean}) => {
-  const isUser=props.user;
+  const searchParams = useSearchParams()
+  
+  //typecast to boolean
+  const entityType = searchParams.get('user')== 'true'? 'user':'partner';
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    { id: 1, user: true, text: 'Hello!'},
-    // { id: 1, user: true, text: 'Hello!', color: '#E1573A' },
-    // { id: 2, user: false, text: 'Hi there!', color: 'white' },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const messagesRef = useRef<HTMLInputElement | null>(null);
   const order= useSelector((state:RootState)=>state.order.order);
-  const socket = io('http://localhost:3696');
-  socket.emit('joinChatRoom',order._id);
+  
  
   //both users and partners will join the chat room
   
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSendMessage = () => {
-    if (message.trim() === '') return;
+  const handleSendMessage = async () => {
+    const message = messagesRef.current?.value;
+    if (message?.trim() === '') return;
 
-    const newMessage = {
+    const newMessage:Message = {
       id: messages.length + 1,
-      user: isUser,
+      user: entityType,
       text: message,
     };
 
-    if(isUser){
-      socket.emit('userMessage',newMessage);
-    }
-    else{
-      socket.emit('partnerMessage',newMessage);
-    }
+    // if(isUser){
+    //   socket.emit('userMessage',newMessage);
+    // }
+    // else{
+    //   socket.emit('partnerMessage',newMessage);
+    // }
 
-    setMessages([...messages,newMessage,]);
-    setMessage('');
+    //call an api to send message to the server along with the message type
+
+    try{
+      const response = await fetch(`http://localhost:3696/chat/addMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+         messageType:entityType==='user'?'userMessage':'partnerMessage',
+          message:newMessage,
+          roomId:order._id,
+        }),
+      });
+      setMessages([...messages,newMessage,]);
+      messagesRef.current!.value = '';
+    }
+    catch(e){
+      console.log(e);
+    }
+   
   };
 
 
   useEffect(() => {  
-    
-  if(isUser){
+    const socket = io('http://localhost:3696');
+    socket.emit('joinChatRoom',order._id,entityType);
+
+  if(entityType==='user'){
     socket.on('partnerMessage', (message) => {
+      console.log("parner message received ",message);
       setMessages([...messages,message]);
     }
     );
   }
   else{
+
     socket.on('userMessage', (message) => {
+      console.log("user message received ",message);
       setMessages([...messages,message]);
     }
     );
@@ -63,7 +101,7 @@ const ChatScreen = (props:{user:boolean}) => {
     return()=> {
       socket.disconnect();
     };
-  }, []);
+  }, [messages]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -74,7 +112,7 @@ const ChatScreen = (props:{user:boolean}) => {
   return (
     <div className="overflow-hidden h-screen  bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4 w-100">
     
-    <div className="md:hidden block font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
+    <div className="md:hidden font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
         </div>
       
@@ -86,14 +124,14 @@ const ChatScreen = (props:{user:boolean}) => {
             <div
               key={msg.id}
               className={`flex items-start space-x-2 ${
-                msg.user ? 'justify-end' : 'justify-start'
+                msg.user===entityType ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
                 className={`p-4 rounded-lg ${
-                  msg.user===isUser
-                    ? 'bg-[#E1573A] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px]'
-                    : 'bg-white text-black rounded-tl-[20px] rounded-br-[20px] rounded-bl-[20px]'
+                  msg.user===entityType
+                    ?'bg-white text-black rounded-tl-[20px] rounded-br-[20px] rounded-bl-[20px]'
+                    : 'bg-[#E1573A] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px]'
                 }`}
               >
                 <p>{msg.text}</p>
@@ -108,11 +146,15 @@ const ChatScreen = (props:{user:boolean}) => {
     type="text"
     className="w-full p-2 border-b-2 border-white focus:outline-none bg-transparent text-white"
     placeholder="Type a message..."
-    value={message}
-    onChange={(e) => setMessage(e.target.value)}
+    ref={messagesRef}
+    // send message with enter key press
     onKeyPress={(e) => {
-      if (e.key === 'Enter') handleSendMessage();
-    }}
+      if (e.key === 'Enter') {
+        handleSendMessage();
+      }
+    }
+  }
+
   />
   <button
     className="ml-4 px-6 py-2 rounded-md bg-[#E1573A] text-white focus:outline-none"

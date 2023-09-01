@@ -34,7 +34,6 @@ orderRouter.get('/getOrders', async (req, res) => {
       const seller = await Seller.findOne({ name: sellerName });
       
       if (!seller) {
-        console.log('Seller not found');
         return res.status(404).json({ error: 'Seller not found' });
       }
 

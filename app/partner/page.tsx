@@ -56,9 +56,9 @@ const Partner=() => {
         const order:Order=await response.json();
 
         dispatch(setOrder(order));
+        
         router.push(
-          '/chat',
-           { user: false},
+          '/chat?user=false',
   );
         console.log('API call successful');
       } else {
