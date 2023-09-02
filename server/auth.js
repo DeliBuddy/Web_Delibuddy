@@ -10,14 +10,13 @@ authRouter.post('/register', async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
-    const newUser = new User({
+    const newUser = new Seller({
       name,
       email,
       password: hashedPassword,
     });
 
     await newUser.save();
-    console.log(newUser);
     res.status(200).json({ message: 'User registered successfully' });
   } catch (error) {
     console.log(error);

@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
+const {orderSchema} = require('./order');
 
 const sellerSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
   orders: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order'
+    orderSchema
   }],
 //   contact_info: {
 //     phone: String,

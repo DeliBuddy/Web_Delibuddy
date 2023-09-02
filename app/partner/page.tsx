@@ -4,11 +4,15 @@ import {io} from 'socket.io-client';
 import { useDispatch } from 'react-redux';
 import {setOrder,Order} from '@/app/orderSlice';
 import {useRouter} from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store';
+
 const Partner=() => {
   const [orders, setOrders] = useState<Order[]>([]);
   const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
   const dispatch= useDispatch();
   const router=useRouter();
+  const user=useSelector((state:RootState) => state.user.user);
   useEffect(() => {
     async function fetchOrders() {
       try {
@@ -48,14 +52,15 @@ const Partner=() => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          order
+          order,
+          partner:user
         }),
       });
 
       if (response.ok) {
-        const order:Order=await response.json();
+        const updatedOrder:Order=await response.json();
 
-        dispatch(setOrder(order));
+        dispatch(setOrder(updatedOrder));
         
         router.push(
           '/chat?user=false',

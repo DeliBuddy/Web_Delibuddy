@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import {useSelector} from 'react-redux';
 import { RootState } from '@/app/store';
 import {io} from 'socket.io-client';
-import {Seller} from '@/app/sellerSlice';
-import {Order} from '@/app/orderSlice';
+import {Order, setOrder} from '@/app/orderSlice';
+import {useDispatch} from 'react-redux';
 // interface Order {
 //   _id: string;
 //   user_id: string;
@@ -25,7 +25,7 @@ const SellerScreen=() => {
   const [orders, setOrders] = useState<Order[]>([]);
   const socket = io('http://localhost:3696'); // Replace with your WebSocket server URL
   const seller = useSelector((state:RootState) => state.seller.seller);
-
+  const dispatch= useDispatch();
   useEffect(() => {
     async function fetchOrders() {
       try {
@@ -50,6 +50,10 @@ const SellerScreen=() => {
 
     socket.on('orderCreated', (newOrder: Order) => {
       console.log(newOrder);
+      setOrders((prevOrders) => [...prevOrders, newOrder]); 
+    });
+
+    socket.on('orderForwarded', (newOrder: Order) => {
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
@@ -79,6 +83,8 @@ const SellerScreen=() => {
           });
 
           if (response.ok) {
+            const updatedOrders = orders.filter((order) => order._id !== orderId);
+            setOrders(updatedOrders);
             console.log('API call successful');
           } else {
             console.error('API call failed:', response.statusText);
@@ -114,6 +120,8 @@ const SellerScreen=() => {
       });
 
       if (response.ok) {
+        const updatedOrders = orders.filter((order) => order._id !== orderId);
+        setOrders(updatedOrders);
         console.log('API call successful');
       } else {
         console.error('API call failed:', response.statusText);
@@ -150,6 +158,11 @@ const SellerScreen=() => {
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
                   <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id)}>Accept</button>
                   <button className="rounded-button" onClick={() => handleDeny(order._id)}>Deny</button>
+                </div>
+              )}
+               {order.status === 'forwarded' && (
+                <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
+                  <button className="rounded-button text-[#E1573A]">Prepared</button>
                 </div>
               )}
             </li>

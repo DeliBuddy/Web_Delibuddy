@@ -1,6 +1,6 @@
 const express = require('express');
 const orderRouter = express.Router();
-const Order = require('./models/order'); // Update the path to your Order model
+const {Order} = require('./models/order'); // Update the path to your Order model
 const Seller = require('./models/seller'); // Update the path to your Seller model
 // Route to add a new order
 
@@ -29,16 +29,29 @@ orderRouter.post('/addOrder', async (req, res) => {
 });
 
 orderRouter.get('/getOrders', async (req, res) => {
-    const sellerName = req.query.seller; // Get the seller name from the query parameter
+    const sellerId = req.query.seller; // Get the seller name from the query parameter
     try {
-      const seller = await Seller.findOne({ name: sellerName });
+      const seller = await Seller.findById(sellerId);
       
       if (!seller) {
         return res.status(404).json({ error: 'Seller not found' });
       }
 
-      const orders = await Order.find({ seller_id: sellerName});
-      res.status(200).json(orders);
+      // const orders = await Order.find({ seller_id: sellerName});
+      //find those order whose seller._id is equal to sellerId
+      //Order{
+      //   seller:{
+      //     _id
+      //   }
+      // }
+      const orders = await Order.find({ 'seller._id': sellerId });
+
+      const pendingForwardedOrders = orders.filter(order=>order.status==='forwarded' || order.status==='pending');
+      
+      
+
+      console.log(pendingForwardedOrders);
+      res.status(200).json(pendingForwardedOrders);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch orders' });

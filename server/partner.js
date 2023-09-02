@@ -1,7 +1,7 @@
 const express = require('express');
-const Order = require('./models/order');
+const {Order} = require('./models/order');
 const partnerRouter = express.Router();
-
+const Seller= require('./models/seller');
 partnerRouter.post('/sendOrderToPartner', async (req, res) => {
     const { order } = req.body;
     const io = req.app.get('io');
@@ -18,14 +18,23 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
    
 
     partnerRouter.post('/acceptOrder', async (req, res) => {
-        const { order } = req.body;
+        const { order,partner } = req.body;
         const io = req.app.get('io');
         try {
             const newOrder=await Order.findById(order._id);
             newOrder.status='forwarded';
+            newOrder.partner=partner;
             await newOrder.save();
             //send message to user and redirect to chat page
             io.to(order._id).emit('orderAccepted',newOrder);
+            io.to(order.seller._id).emit('orderForwarded',newOrder);
+
+            //find the seller and updates its orders list
+
+            const seller = await Seller.findById(order.seller._id);
+            seller.orders.push(newOrder);
+            await seller.save();
+
             res.status(200).json(newOrder);
         }
         catch (error) {
@@ -35,24 +44,7 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
 
     });
 
-    // useEffect(() => {
-    //     async function fetchOrders() {
-    //       try {
-    //         const response = await fetch(`http://localhost:3696/partner/getOrders?`);
-    //         if (response.ok) {
-    //           const data = await response.json();
-    //           setOrders(data);
-    //         } else {
-    //           console.error('Error fetching orders:', response.statusText);
-    //         }
-    //       } catch (error) {
-    //         console.error('Error fetching orders:', error);
-    //       }
-    //     }
-    
-    //     fetchOrders();
-    //   }, []);   
-    // write api for the above frontend code
+  
     partnerRouter.get('/getOrders', async (req, res) => {
 
         try {
