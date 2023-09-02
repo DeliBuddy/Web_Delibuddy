@@ -70,4 +70,30 @@ orderRouter.get('/getOrders', async (req, res) => {
     }
   });
 
+  orderRouter.post('/rejectOrder', async (req, res) => {
+    const { orderId, reason,sellerId } = req.body;
+  
+    try {
+      const order = await Order.findById(orderId);
+      if (!order) {
+        console.log('Order not found');
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+     //delete the order from db
+
+
+     await Order.findByIdAndDelete(orderId);
+
+      // Emit an event to notify clients about the order update
+      const io = req.app.get('io');
+      io.to(sellerId).emit('rejectedOrder', reason);
+     
+      res.status(200).json({ message: 'Order deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to accept order' });
+    }
+  });
+
 module.exports = orderRouter;

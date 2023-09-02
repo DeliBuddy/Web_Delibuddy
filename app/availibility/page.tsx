@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {useSelector} from 'react-redux';
 import {RootState} from '@/app/store';
 import { useDispatch } from 'react-redux';
-import {setOrder} from '@/app/orderSlice';
+import {setOrder,clearOrder} from '@/app/orderSlice';
 const Availibility = () => {
   const [progress, setProgress] = useState(0);
   const [timerEnded, setTimerEnded] = useState(false);
@@ -38,6 +38,12 @@ const Availibility = () => {
   socket.on('updatedOrder', (updatedOrder) => {
       dispatch(setOrder(updatedOrder));
       router.push('/cart');
+    });
+  
+  socket.on('rejectedOrder', (reason) => {
+      dispatch(clearOrder());
+      console.log(reason);
+      router.push('/shop');
     });
 
     return () => {

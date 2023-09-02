@@ -92,8 +92,37 @@ const SellerScreen=() => {
     }
   };
 
-  const handleDeny = (orderId: string) => {
-    console.log('Denied order:', orderId);
+  const handleDeny = async (orderId: string) => {
+   // ask for reason through prompt
+    
+   const reason= prompt("Enter the reason");
+
+
+
+    try {
+          
+      const response = await fetch(`http://localhost:3696/order/rejectOrder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          sellerId: seller._id,
+          reason
+        }),
+      });
+
+      if (response.ok) {
+        console.log('API call successful');
+      } else {
+        console.error('API call failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('API call error:', error);
+    }
+
+
   };
 
   return (
