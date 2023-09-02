@@ -5,18 +5,6 @@ import { RootState } from '@/app/store';
 import {io} from 'socket.io-client';
 import {Order, setOrder} from '@/app/orderSlice';
 import {useDispatch} from 'react-redux';
-// interface Order {
-//   _id: string;
-//   user_id: string;
-//   seller_id: string;
-//   items: string[];
-//   total_price: number | null;
-//   status: string;
-// }
-
-// interface OrderListProps {
-//   seller: string;
-// }
 
 
 
@@ -133,6 +121,30 @@ const SellerScreen=() => {
 
   };
 
+  const orderPrepared = async (order: Order) => {
+    try {
+      const response = await fetch(`http://localhost:3696/seller/prepareOrder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId:order._id,
+        }),
+      });
+      
+      if (response.ok) {
+        const updatedOrders = orders.filter((order) => order._id !== order._id);
+        setOrders(updatedOrders);
+      } else {
+        console.error('API call failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('API call error:', error);
+    }
+  };
+
+
   return (
     <div className="flex flex-col mt-20 justify-center items-center  bg-red w-full">
       <div>
@@ -162,7 +174,7 @@ const SellerScreen=() => {
               )}
                {order.status === 'forwarded' && (
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  <button className="rounded-button text-[#E1573A]">Prepared</button>
+                  <button className="rounded-button text-[#E1573A]" onClick={()=>orderPrepared(order)}>Prepared</button>
                 </div>
               )}
             </li>

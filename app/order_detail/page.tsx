@@ -49,7 +49,7 @@ const OrderDetail = () => {
       if (response.ok) {
         const order:Order = await response.json();
         dispatch(setOrder(order));
-        router.push('/availibility');
+        router.push('/availability');
       } else {
         console.log('Order failed');
       }

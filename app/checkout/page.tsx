@@ -21,8 +21,6 @@ const Checkout = () => {
   socket.on('orderAccepted', (updatedOrder:Order) => {
       setTimerEnded(true);
       dispatch(setOrder(updatedOrder));
-      //send boolean variable to next page
-      
       router.push(
         '/chat?user=true',
 );
@@ -33,21 +31,44 @@ const Checkout = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const duration = 10; // seconds
-  //   const interval = setInterval(() => {
-  //     setProgress((prevProgress) => prevProgress + 0.1);
-  //   }, (duration * 1000) / 1000);
+  useEffect(() => {
+    const duration = 10; // seconds
+    const interval = setInterval(() => {
+      setProgress((prevProgress) => prevProgress + 0.1);
+    }, (duration * 1000) / 1000);
 
-  //   setTimeout(() => {
-  //     clearInterval(interval);
-  //     setTimerEnded(true);
-  //   }, duration * 1000);
+    const timeout=setTimeout(() => {
+      console.log('timeout called');
+      clearInterval(interval);
+      setTimerEnded(true);
+      orderIgnored(order);
+      setTimeout(() => {
+        router.push('/cart');
+      }, 2000);
+    }, duration * 1000);
 
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
+    return () => {
+      console.log('unmounting');
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const orderIgnored = async (order:Order) => {
+    try {
+      const response = await fetch('http://localhost:3696/partner/orderIgnored', {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order,
+        }),
+      });
+    } catch (error) {
+      console.error('API call error:', error);
+    }
+  };
 
   const indicatorStyle = {
     backgroundImage: `linear-gradient(to right, white ${progress}%, #E1573A  ${progress}%)`,
@@ -63,7 +84,7 @@ const Checkout = () => {
         </div>}
         {
           timerEnded && <div className="flex flex-row font-inter font-bold text-[28px] md:text-[40px] justify-center">
-            Your order has been <span className="text-[#E1573A] flex flex-row">&nbsp; placed!</span>
+            Couldn't find Deli <span className="text-[#E1573A] flex flex-row">Buddies</span>
             </div>
         }
        {!timerEnded && <div className="loading-indicator bg-white rounded-xl mt-4" style={indicatorStyle} />}

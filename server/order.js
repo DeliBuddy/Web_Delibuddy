@@ -37,20 +37,10 @@ orderRouter.get('/getOrders', async (req, res) => {
         return res.status(404).json({ error: 'Seller not found' });
       }
 
-      // const orders = await Order.find({ seller_id: sellerName});
-      //find those order whose seller._id is equal to sellerId
-      //Order{
-      //   seller:{
-      //     _id
-      //   }
-      // }
       const orders = await Order.find({ 'seller._id': sellerId });
 
       const pendingForwardedOrders = orders.filter(order=>order.status==='forwarded' || order.status==='pending');
       
-      
-
-      console.log(pendingForwardedOrders);
       res.status(200).json(pendingForwardedOrders);
     } catch (error) {
       console.error(error);
@@ -106,6 +96,27 @@ orderRouter.get('/getOrders', async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to accept order' });
+    }
+  });
+
+  //write api for the above front end code
+  orderRouter.post('/cancelOrder', async (req, res) => {
+    const { order } = req.body;
+    try{
+      const temp = await Order.findById(order._id);
+      if (!temp) {
+        console.log('Order not found');
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+     //delete the order from db
+     
+      await Order.findByIdAndDelete(order._id);
+
+      res.status(200).json({ message: 'Order deleted successfully' });
+    }catch(error){
+      console.error(error);
+      res.status(500).json({ error: 'Failed to cancel order' });
     }
   });
 

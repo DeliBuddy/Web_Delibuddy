@@ -2,11 +2,18 @@ const express = require('express');
 const {Order} = require('./models/order');
 const partnerRouter = express.Router();
 const Seller= require('./models/seller');
+
+
 partnerRouter.post('/sendOrderToPartner', async (req, res) => {
     const { order } = req.body;
     const io = req.app.get('io');
     
     try {
+        
+        const newOrder=await Order.findById(order._id);
+        newOrder.status='waiting';
+        await newOrder.save();
+
         io.to('joinPartnerRoom').emit('newOrder',order);
         res.status(200).json(order);
     } catch (error) {
@@ -14,6 +21,24 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
         res.status(500).json({ error: 'Failed to create order' });
     }
     });
+
+partnerRouter.post('/orderIgnored', async (req, res) => {
+    const { order } = req.body;
+    const io = req.app.get('io');
+    try {
+
+        const newOrder=await Order.findById(order._id);
+        newOrder.status='ignored';
+        await newOrder.save();
+
+        
+        io.to('joinPartnerRoom').emit('orderIgnored',order);
+        res.status(200).json(order);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to create order' });
+    }
+});
 
    
 
@@ -48,7 +73,7 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
     partnerRouter.get('/getOrders', async (req, res) => {
 
         try {
-            const orders = await Order.find({ status: 'accepted' });
+            const orders = await Order.find({ status: 'waiting' });
             res.status(200).json(orders);
         } catch (error) {
             console.log(error);

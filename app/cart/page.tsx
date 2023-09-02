@@ -4,6 +4,8 @@ import Image from 'next/image'
 import {useRouter} from 'next/navigation'
 import {useSelector} from 'react-redux';
 import {RootState} from '@/app/store';
+import {Order} from '@/app/orderSlice';
+
 const items = [
     {
       name: 'Paneer Kathi Roll',
@@ -27,6 +29,29 @@ const items = [
 const Cart= () => {
   const router = useRouter();
   const order= useSelector((state:RootState)=>state.order.order);
+
+  const cancelOrder=async () => {
+    try{
+      const response= await fetch('http://localhost:3696/order/cancelOrder',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body:JSON.stringify({
+          order,
+        }),
+      });
+      if(response.ok){
+        router.push('/shop');
+      }else{
+        console.error('API call failed:',response.statusText);
+      }
+    }
+    catch(error){
+      console.error('API call error:',error);
+    }
+  };
+
   const handlePay = async () => {
     try {
       const response = await fetch('http://localhost:3696/partner/sendOrderToPartner', {
@@ -147,6 +172,10 @@ const Cart= () => {
             
         <button className=" w-full bg-[#E1573A] font-inter font-extrabold rounded-lg px-16 md:px-10 py-3 mt-10 text-[18px] mb-4" onClick={handlePay}>
          Proceed to Pay
+        </button>
+
+        <button className=" w-full bg-red-900 font-inter font-extrabold rounded-lg px-16 md:px-10 py-3 mt-2 text-[18px] mb-4" onClick={cancelOrder}>
+         Cancel
         </button>
         </div>
     </div>

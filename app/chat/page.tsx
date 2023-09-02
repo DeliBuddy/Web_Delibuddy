@@ -47,14 +47,7 @@ const ChatScreen = () => {
       text: message,
     };
 
-    // if(isUser){
-    //   socket.emit('userMessage',newMessage);
-    // }
-    // else{
-    //   socket.emit('partnerMessage',newMessage);
-    // }
-
-    //call an api to send message to the server along with the message type
+    
 
     try{
       const response = await fetch(`http://localhost:3696/chat/addMessage`, {
@@ -90,12 +83,15 @@ const ChatScreen = () => {
     );
   }
   else{
-
     socket.on('userMessage', (message) => {
       console.log("user message received ",message);
       setMessages([...messages,message]);
     }
     );
+
+    socket.on('orderPrepared',()=>{
+      alert("Order is prepared");
+    });
   }
 
     return()=> {

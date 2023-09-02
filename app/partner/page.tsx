@@ -13,6 +13,7 @@ const Partner=() => {
   const dispatch= useDispatch();
   const router=useRouter();
   const user=useSelector((state:RootState) => state.user.user);
+  
   useEffect(() => {
     async function fetchOrders() {
       try {
@@ -36,6 +37,10 @@ const Partner=() => {
 
     socket.on('newOrder', (newOrder: Order) => {
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
+    });
+
+    socket.on('orderIgnored', (ignoredOrder: Order) => {
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== ignoredOrder._id));
     });
 
     // Clean up the socket connection when component unmounts
