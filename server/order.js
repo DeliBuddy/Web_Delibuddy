@@ -12,14 +12,25 @@ orderRouter.post('/addOrder', async (req, res) => {
 
 
   try {
-    const newOrder = new Order({
-      user,
-      seller,
-      items,
-      status
-    });
+    //find the seller in the db
+    const foundSeller = await Seller.findById(seller._id);
 
+    const order={
+      user:user,
+      seller:seller,
+      items:items,
+      status:status
+    };
+
+    const newOrder = new Order(order);
     const savedOrder = await newOrder.save();
+
+    
+
+    foundSeller.orders.push(savedOrder);
+    await foundSeller.save();
+
+   
     io.to(seller._id).emit('orderCreated', savedOrder);
     res.status(200).json(savedOrder);
   } catch (error) {
@@ -37,7 +48,8 @@ orderRouter.get('/getOrders', async (req, res) => {
         return res.status(404).json({ error: 'Seller not found' });
       }
 
-      const orders = await Order.find({ 'seller._id': sellerId });
+      //take out the orders array from the seller
+      const orders = seller.orders;
 
       const pendingForwardedOrders = orders.filter(order=>order.status==='forwarded' || order.status==='pending');
       
@@ -52,21 +64,38 @@ orderRouter.get('/getOrders', async (req, res) => {
     const { orderId, amount,sellerId } = req.body;
   
     try {
-      const order = await Order.findById(orderId);
-      if (!order) {
-        console.log('Order not found');
-        return res.status(404).json({ error: 'Order not found' });
+      //find the order in the seller's orders array
+
+      const seller = await Seller.findById(sellerId);
+
+      if (!seller) {
+        console.log('Seller not found');
+        return res.status(404).json({ error: 'Seller not found' });
       }
-  
-     
-      order.status = 'accepted';
-      order.total_price = amount;
-      const updatedOrder = await order.save();
+
+      //find the order in the seller's orders array and change the status to accepted and amount to the amount sent from the front end
+
+      let index;
+      for(let i=0;i<seller.orders.length;i++){
+        console.log(seller.orders[i]._id.toString());
+        if(seller.orders[i]._id.toString()==orderId){
+          seller.orders[i].status = 'accepted';
+          seller.orders[i].total_price = amount;
+          index=i;
+          break;
+        }
+      }
+      // order.status = 'accepted';
+      // order.amount = amount;
+      await seller.save();
+
+
+
       // Emit an event to notify clients about the order update
       const io = req.app.get('io');
-      io.to(sellerId).emit('updatedOrder', updatedOrder);
+      io.to(sellerId).emit('updatedOrder', seller.orders[index]);
      
-      res.status(200).json(updatedOrder);
+      res.status(200).json( seller.orders[index]);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to accept order' });
@@ -77,16 +106,22 @@ orderRouter.get('/getOrders', async (req, res) => {
     const { orderId, reason,sellerId } = req.body;
   
     try {
-      const order = await Order.findById(orderId);
-      if (!order) {
-        console.log('Order not found');
-        return res.status(404).json({ error: 'Order not found' });
+      const seller = await Seller.findById(sellerId);
+      if(!seller){ 
+        console.log('Seller not found');
+        return res.status(404).json({ error: 'Seller not found' });
       }
+
   
-     //delete the order from db
+     //delete the order from seller's orders array
 
+     seller.orders = seller.orders.filter(order=>order._id.toString()!==orderId);
 
-     await Order.findByIdAndDelete(orderId);
+      await seller.save();
+
+      await Order.findByIdAndDelete(orderId);
+    
+
 
       // Emit an event to notify clients about the order update
       const io = req.app.get('io');
@@ -99,18 +134,25 @@ orderRouter.get('/getOrders', async (req, res) => {
     }
   });
 
+
+
   //write api for the above front end code
   orderRouter.post('/cancelOrder', async (req, res) => {
     const { order } = req.body;
     try{
-      const temp = await Order.findById(order._id);
-      if (!temp) {
-        console.log('Order not found');
-        return res.status(404).json({ error: 'Order not found' });
+      const seller = await Seller.findById(order.seller._id);
+      if(!seller){ 
+        console.log('Seller not found');
+        return res.status(404).json({ error: 'Seller not found' });
       }
+
   
-     //delete the order from db
-     
+     //delete the order from seller's orders array
+
+     seller.orders = seller.orders.filter(order=>order._id.toString()!==order._id.toString());
+
+      await seller.save();
+
       await Order.findByIdAndDelete(order._id);
 
       res.status(200).json({ message: 'Order deleted successfully' });

@@ -129,7 +129,7 @@ const SellerScreen=() => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId:order._id,
+          order
         }),
       });
       

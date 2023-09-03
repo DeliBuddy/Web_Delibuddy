@@ -10,12 +10,23 @@ partnerRouter.post('/sendOrderToPartner', async (req, res) => {
     
     try {
         
-        const newOrder=await Order.findById(order._id);
-        newOrder.status='waiting';
-        await newOrder.save();
+        const seller = await Seller.findById(order.seller._id);
 
-        io.to('joinPartnerRoom').emit('newOrder',order);
-        res.status(200).json(order);
+        //change the seller's order array status to waiting
+        seller.orders= seller.orders.map(item=>{
+            if(item._id.toString()===order._id.toString()){
+                item.status='waiting';
+            }
+            return item;
+        });
+        await seller.save();
+
+        const updatedOrder=await Order.findById(order._id);
+        updatedOrder.status='waiting';
+        await updatedOrder.save();
+
+        io.to('joinPartnerRoom').emit('newOrder',updatedOrder);
+        res.status(200).json(updatedOrder);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Failed to create order' });
@@ -31,9 +42,17 @@ partnerRouter.post('/orderIgnored', async (req, res) => {
         newOrder.status='ignored';
         await newOrder.save();
 
-        
-        io.to('joinPartnerRoom').emit('orderIgnored',order);
-        res.status(200).json(order);
+        const seller = await Seller.findById(order.seller._id);
+        seller.orders= seller.orders.map(item=>{
+            if(item._id.toString()===order._id.toString()){
+                item.status='ignored';
+            }
+            return item;
+        });
+        await seller.save();
+
+        io.to('joinPartnerRoom').emit('orderIgnored',newOrder);
+        res.status(200).json(newOrder);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Failed to create order' });
@@ -50,15 +69,21 @@ partnerRouter.post('/orderIgnored', async (req, res) => {
             newOrder.status='forwarded';
             newOrder.partner=partner;
             await newOrder.save();
+
+            const seller = await Seller.findById(order.seller._id);
+            seller.orders= seller.orders.map(item=>{
+                if(item._id.toString()===order._id.toString()){
+                    item.status='forwarded';
+                    item.partner=partner;
+                }
+                return item;
+            });
+            await seller.save();
             //send message to user and redirect to chat page
             io.to(order._id).emit('orderAccepted',newOrder);
             io.to(order.seller._id).emit('orderForwarded',newOrder);
 
-            //find the seller and updates its orders list
-
-            const seller = await Seller.findById(order.seller._id);
-            seller.orders.push(newOrder);
-            await seller.save();
+            
 
             res.status(200).json(newOrder);
         }

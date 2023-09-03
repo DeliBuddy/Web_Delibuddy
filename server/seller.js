@@ -15,40 +15,26 @@ sellerRouter.get("/getSellers", async (req, res) => {
     }
 });
 
-// const orderPrepared = async (order: Order) => {
-//     try {
-//       const response = await fetch(`http://localhost:3696/seller/prepareOrder`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           orderId: order._id,
-//           sellerId: seller._id,
-//         }),
-//       });
-      
-//       if (response.ok) {
-//         const updatedOrders = orders.filter((order) => order._id !== order._id);
-//         setOrders(updatedOrders);
-//       } else {
-//         console.error('API call failed:', response.statusText);
-//       }
-//     } catch (error) {
-//       console.error('API call error:', error);
-//     }
-//   };
 
-//write api for the above front end code
 sellerRouter.post("/prepareOrder", async (req, res) => {
-    const { orderId} = req.body;
+    const { order} = req.body;
     try {
-        const temp= await Order.findById(orderId);
+        const temp= await Order.findById(order._id);
         temp.status = "prepared";
         await temp.save();
-        
+
+        const seller= await Seller.findById(order.seller._id);
+        seller.orders= seller.orders.map(item=>{
+            if(item._id.toString()===order._id.toString()){
+                item.status='prepared';
+            }
+            return item;
+        });
+        await seller.save();
+
+
         const io = req.app.get('io');
-        io.to(orderId).emit('orderPrepared');
+        io.to(order._id).emit('orderPrepared');
         res.status(200).json({ message: "Order Prepared" });
     } catch (error) {
         console.log(error);

@@ -5,8 +5,24 @@ const sellerSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
-  orders: [{
-    orderSchema
+  orders: [
+    {
+    user : {
+      type:Map,
+     },
+    seller:{
+      type:Map,
+    },
+    partner: {
+      type:Map,
+      default:null
+     },
+      items: [String],
+      total_price: {
+        type: Number,
+        default:null
+      },
+      status: String,
   }],
 //   contact_info: {
 //     phone: String,
