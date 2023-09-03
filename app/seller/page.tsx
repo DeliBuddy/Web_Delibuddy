@@ -45,6 +45,10 @@ const SellerScreen=() => {
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
+    socket.on('orderReceived', (orderId) => {
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+    });
 
     return () => {
       socket.disconnect();
@@ -134,8 +138,7 @@ const SellerScreen=() => {
       });
       
       if (response.ok) {
-        const updatedOrders = orders.filter((order) => order._id !== order._id);
-        setOrders(updatedOrders);
+        //change PREPARE TO WAITING
       } else {
         console.error('API call failed:', response.statusText);
       }

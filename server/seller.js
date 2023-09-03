@@ -32,7 +32,7 @@ sellerRouter.post("/prepareOrder", async (req, res) => {
         });
         await seller.save();
 
-
+        
         const io = req.app.get('io');
         io.to(order._id).emit('orderPrepared');
         res.status(200).json({ message: "Order Prepared" });

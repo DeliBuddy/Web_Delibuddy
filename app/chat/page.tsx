@@ -5,13 +5,9 @@ import {useSelector} from 'react-redux';
 import { io } from 'socket.io-client';
 import {RootState} from '@/app/store';
 import { useSearchParams } from 'next/navigation';
-// extract the below user variable from the router object
-// router.push(
-//   '/chat',
-//    { user: true },
-// );
-// });
-
+import { useDispatch } from 'react-redux';
+import { setOrder } from '@/app/orderSlice';
+import {useRouter} from 'next/navigation';
 interface Message {
   id: number,
   user: string,
@@ -27,6 +23,8 @@ const ChatScreen = () => {
   const entityType = searchParams.get('user')== 'true'? 'user':'partner';
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const dispatch= useDispatch();
+  const router=useRouter();
 
   const messagesRef = useRef<HTMLInputElement | null>(null);
   const order= useSelector((state:RootState)=>state.order.order);
@@ -70,10 +68,67 @@ const ChatScreen = () => {
    
   };
 
+  const handleOrderDelivered = async () => {
+    try{
+      const response = await fetch(`http://localhost:3696/order/orderDelivered`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order,
+        }),
+      });
+      if(response.ok){
+        const order= await response.json();
+        dispatch(setOrder(order));
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+  
+  };
+
+  const handleOrderReceived = async () => {
+    try{
+      const response = await fetch(`http://localhost:3696/order/orderReceived`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order,
+        }),
+      });
+      if(response.ok){
+        const order= await response.json();
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+  
+  };
+
 
   useEffect(() => {  
     const socket = io('http://localhost:3696');
     socket.emit('joinChatRoom',order._id,entityType);
+
+  socket.on('orderPrepared',()=>{
+      alert("Order is prepared");
+  });  
+
+  socket.on('orderReceived',()=>{
+    if(entityType==='partner'){
+      router.push('/partner');
+    }
+    else{
+      router.push('/shop');
+    }
+  });
+
 
   if(entityType==='user'){
     socket.on('partnerMessage', (message) => {
@@ -81,6 +136,12 @@ const ChatScreen = () => {
       setMessages([...messages,message]);
     }
     );
+
+    socket.on('orderDelivered',(updatedOrder)=>{
+      alert("Order is delivered");
+      dispatch(setOrder(updatedOrder));
+      console.log(order);
+  });
   }
   else{
     socket.on('userMessage', (message) => {
@@ -89,9 +150,6 @@ const ChatScreen = () => {
     }
     );
 
-    socket.on('orderPrepared',()=>{
-      alert("Order is prepared");
-    });
   }
 
     return()=> {
@@ -106,7 +164,7 @@ const ChatScreen = () => {
   }, [messages]);
 
   return (
-    <div className="overflow-hidden h-screen  bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4 w-100">
+    <div className="overflow-hidden h-full  bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center py-4 w-100">
     
     <div className="md:hidden font-inter font-bold flex flex-col items-center justify-center mt-4 text-[20px]">
             <Image src="/logo.png" width={200} height={200} alt="Logo"></Image>
@@ -143,7 +201,6 @@ const ChatScreen = () => {
     className="w-full p-2 border-b-2 border-white focus:outline-none bg-transparent text-white"
     placeholder="Type a message..."
     ref={messagesRef}
-    // send message with enter key press
     onKeyPress={(e) => {
       if (e.key === 'Enter') {
         handleSendMessage();
@@ -160,6 +217,47 @@ const ChatScreen = () => {
   </button>
 </div>
     </div>
+
+   {/* check if entityType show the button otherwise not */}
+    {entityType==='partner' && (
+       <button
+       className=" mx-auto flex flex-row px-6 py-2 rounded-md bg-[#E1573A] text-white focus:outline-none"
+       onClick={handleOrderDelivered}
+     >
+       ORDER DELIVERED
+     </button>
+    )}
+
+{entityType==='user' && (
+       <button
+       className=" mx-auto flex flex-row px-6 py-2 rounded-md bg-[#E1573A] text-white focus:outline-none"
+       onClick={handleOrderReceived}
+     >
+       ORDER RECEIVED
+     </button>
+    )}
+
+
+    {/* ORDER DETAILS */}
+    <div className="mx-auto md:w-[40vw] my-6 rounded-xl md:px-2 md:py-2">
+        {/* Display order details here */}
+        <div className=" p-4 mb-4 rounded-lg">
+          <h2 className="text-lg font-semibold">Order Details</h2>
+          <div>
+            <p>Order ID: {order._id}</p>
+            {/* Display the list of items here */}
+
+            <p>Items:</p>
+            <div className="flex flex-col space-y-2 0">
+              {order.items.map((item) => (
+                <div key={item} className="flex items-center space-x-2">
+                  <p>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

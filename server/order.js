@@ -2,6 +2,7 @@ const express = require('express');
 const orderRouter = express.Router();
 const {Order} = require('./models/order'); // Update the path to your Order model
 const Seller = require('./models/seller'); // Update the path to your Seller model
+const { io } = require('socket.io-client');
 // Route to add a new order
 
 
@@ -77,7 +78,6 @@ orderRouter.get('/getOrders', async (req, res) => {
 
       let index;
       for(let i=0;i<seller.orders.length;i++){
-        console.log(seller.orders[i]._id.toString());
         if(seller.orders[i]._id.toString()==orderId){
           seller.orders[i].status = 'accepted';
           seller.orders[i].total_price = amount;
@@ -161,5 +161,55 @@ orderRouter.get('/getOrders', async (req, res) => {
       res.status(500).json({ error: 'Failed to cancel order' });
     }
   });
+
+  orderRouter.post('/orderDelivered', async (req, res) => {
+    const {order}=req.body;
+    try{
+      const updatedOrder= await Order.findById(order._id);
+      updatedOrder.status='delivered';
+      await updatedOrder.save();
+
+      const seller=await Seller.findById(order.seller._id);
+      seller.orders=seller.orders.map(item=>{
+        if(item._id.toString()===order._id.toString()){
+          item.status='delivered';
+        }
+        return item;
+      }
+      );
+      await seller.save();
+
+      const io = req.app.get('io');
+      io.to(order._id).emit('orderDelivered', updatedOrder);
+      res.status(200).json(updatedOrder);
+    }catch(error){
+      console.error(error);
+      res.status(500).json({ error: 'Failed to update order' });
+    }
+  });
+
+  orderRouter.post('/orderReceived', async (req, res) => {
+    const {order}=req.body;
+    try{
+      //delete the order from Orders
+      await Order.findByIdAndDelete(order._id);
+
+
+      const seller=await Seller.findById(order.seller._id);
+      seller.orders=seller.orders.filter(item=>item._id.toString()!==order._id.toString());
+      await seller.save();
+
+
+
+      const io = req.app.get('io');
+      io.to(order.seller._id).emit('orderReceived', order._id);
+      io.to(order._id).emit('orderReceived');
+      res.status(200).json({ message: 'Order deleted successfully' });
+    }catch(error){
+      console.error(error);
+      res.status(500).json({ error: 'Failed to update order' });
+    }
+  });
+
 
 module.exports = orderRouter;

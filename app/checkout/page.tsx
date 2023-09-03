@@ -19,7 +19,6 @@ const Checkout = () => {
   socket.emit('joinChatRoom',order._id);
   
   socket.on('orderAccepted', (updatedOrder:Order) => {
-      setTimerEnded(true);
       dispatch(setOrder(updatedOrder));
       router.push(
         '/chat?user=true',
