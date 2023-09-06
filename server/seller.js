@@ -19,9 +19,9 @@ sellerRouter.get("/getSellers", async (req, res) => {
 sellerRouter.post("/prepareOrder", async (req, res) => {
     const { order} = req.body;
     try {
-        const temp= await Order.findById(order._id);
-        temp.status = "prepared";
-        await temp.save();
+        const updatedOrder= await Order.findById(order._id);
+        updatedOrder.status = "prepared";
+        await updatedOrder.save();
 
         const seller= await Seller.findById(order.seller._id);
         seller.orders= seller.orders.map(item=>{
@@ -35,7 +35,7 @@ sellerRouter.post("/prepareOrder", async (req, res) => {
         
         const io = req.app.get('io');
         io.to(order._id).emit('orderPrepared');
-        res.status(200).json({ message: "Order Prepared" });
+        res.status(200).json(updatedOrder);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Failed to prepare order" });

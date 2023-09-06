@@ -36,15 +36,18 @@ const SellerScreen=() => {
   useEffect(() => {
     socket.emit('joinSellerRoom', seller._id);
 
+    //when order is created for the first time
     socket.on('orderCreated', (newOrder: Order) => {
       console.log(newOrder);
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
+    //when order is accepted by a delivery partner
     socket.on('orderForwarded', (newOrder: Order) => {
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
+    //when order is received by user
     socket.on('orderReceived', (orderId) => {
       const updatedOrders = orders.filter((order) => order._id !== orderId);
       setOrders(updatedOrders);
@@ -53,7 +56,7 @@ const SellerScreen=() => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [orders]);
 
   const handleAccept = async (orderId: string) => {
     const enteredAmount = prompt("Enter the amount:"); 
@@ -138,7 +141,17 @@ const SellerScreen=() => {
       });
       
       if (response.ok) {
-        //change PREPARE TO WAITING
+        const updatedOrder=await response.json();
+        
+        setOrders((prevOrders)=>{
+          return prevOrders.map((order)=>{
+            if(order._id===updatedOrder._id){
+              return updatedOrder;
+            }
+            return order;
+          })
+        })
+
       } else {
         console.error('API call failed:', response.statusText);
       }
@@ -178,6 +191,11 @@ const SellerScreen=() => {
                {order.status === 'forwarded' && (
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
                   <button className="rounded-button text-[#E1573A]" onClick={()=>orderPrepared(order)}>Prepared</button>
+                </div>
+              )}
+               {order.status === 'prepared' && (
+                <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
+                  Waiting to be delivered...
                 </div>
               )}
             </li>
