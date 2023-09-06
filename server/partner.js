@@ -2,7 +2,7 @@ const express = require('express');
 const {Order} = require('./models/order');
 const partnerRouter = express.Router();
 const Seller= require('./models/seller');
-
+const {Chat} = require('./models/chat');
 
 partnerRouter.post('/sendOrderToPartner', async (req, res) => {
     const { order } = req.body;
@@ -79,6 +79,14 @@ partnerRouter.post('/orderIgnored', async (req, res) => {
                 return item;
             });
             await seller.save();
+
+            //create chat room
+            const chat=new Chat({
+                roomId:order._id,
+                messages:[]
+            });
+            await chat.save();
+
             //send message to user and redirect to chat page
             io.to(order._id).emit('orderAccepted',newOrder);
             io.to(order.seller._id).emit('orderForwarded',newOrder);

@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import Image from 'next/image'
 import {useSelector} from 'react-redux';
 import { io } from 'socket.io-client';
@@ -19,9 +19,9 @@ const ChatScreen = () => {
 
   const searchParams = useSearchParams()
   
-  //typecast to boolean
+  
   const entityType = searchParams.get('user')== 'true'? 'user':'partner';
-  const [message, setMessage] = useState('');
+  //const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const dispatch= useDispatch();
   const router=useRouter();
@@ -110,6 +110,31 @@ const ChatScreen = () => {
     }
   
   };
+
+  useEffect(() => {
+    const getMessages = async () => {
+      try{
+        const response = await fetch(`http://localhost:3696/chat/getMessages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            roomId:order._id,
+          }),
+        });
+        if(response.ok){
+          const messages= await response.json();
+          setMessages(messages);
+        }
+      }
+      catch(e){
+        console.log(e);
+      }
+    };
+    getMessages();
+  }
+  , []);
 
 
   useEffect(() => {  

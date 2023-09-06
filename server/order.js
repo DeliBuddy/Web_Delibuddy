@@ -3,6 +3,7 @@ const orderRouter = express.Router();
 const {Order} = require('./models/order'); // Update the path to your Order model
 const Seller = require('./models/seller'); // Update the path to your Seller model
 const { io } = require('socket.io-client');
+const {Chat} = require('./models/chat');
 // Route to add a new order
 
 
@@ -178,6 +179,10 @@ orderRouter.get('/getOrders', async (req, res) => {
       }
       );
       await seller.save();
+
+      //deleting the chat room
+      await Chat.findOneAndDelete({roomId:order._id});
+
 
       const io = req.app.get('io');
       io.to(order._id).emit('orderDelivered', updatedOrder);
