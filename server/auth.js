@@ -10,7 +10,7 @@ authRouter.post('/register', async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
-    const newUser = new Seller({
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,

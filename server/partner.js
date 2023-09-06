@@ -83,7 +83,8 @@ partnerRouter.post('/orderIgnored', async (req, res) => {
             io.to(order._id).emit('orderAccepted',newOrder);
             io.to(order.seller._id).emit('orderForwarded',newOrder);
 
-            
+            //send message to partner that order has been accepted by some partner
+            io.to('joinPartnerRoom').emit('orderAccepted',newOrder);
 
             res.status(200).json(newOrder);
         }

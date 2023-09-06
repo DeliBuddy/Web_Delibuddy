@@ -39,6 +39,12 @@ const Partner=() => {
       setOrders((prevOrders) => [...prevOrders, newOrder]); 
     });
 
+    //remove the order from the list when it has been accepted by another partner
+
+    socket.on('orderAccepted', (acceptedOrder: Order) => {
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== acceptedOrder._id));
+    });
+
     socket.on('orderIgnored', (ignoredOrder: Order) => {
       setOrders((prevOrders) => prevOrders.filter((order) => order._id !== ignoredOrder._id));
     });
@@ -83,7 +89,7 @@ const Partner=() => {
 
   return (
     <div className="flex flex-col mt-20 justify-center items-center  bg-red w-full">
-        <div> Partners</div>
+        <div> Partner: {user.name} </div>
         <ul className='w-full '>
           {orders.map((order) => (
             
