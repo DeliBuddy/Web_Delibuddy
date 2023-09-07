@@ -3,7 +3,7 @@ const authRouter = express.Router();
 const bcrypt = require('bcrypt'); 
 const User = require('./models/user');
 const Seller = require('./models/seller');
-
+const jwt= require('jsonwebtoken');
 authRouter.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -39,17 +39,57 @@ authRouter.post('/login', async (req, res) => {
       
       // Compare passwords
       const temp=user?user:seller;
-      const passwordMatch = await bcrypt.compare(password, temp.password);
+      const passwordMatch = bcrypt.compare(password, temp.password);
       if (!passwordMatch) {
         
         return res.status(401).json({ error: 'Invalid password' });
       }
-     
-      res.status(200).json({ message: 'Login successful', user:temp});
+      // create a json web token
+
+
+      const token = await jwt.sign(
+        { email: temp.email },
+        "bisleri",
+        { expiresIn: '1h' },
+      );
+      res.status(200).json({ message: 'Login successful', user:temp, token});
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'An error occurred while logging in' });
     }
   });
 
+authRouter.get('/isTokenValid', async (req, res) => {
+  try {
+    const token = req.headers.token;
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+  
+    const verified=jwt.verify(token,'bisleri');
+    // console.log(verified);
+    // { email: 'tm217@snu.edu.in', iat: 1694068205, exp: 1694071805 }
+  
+    if(!verified){
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const email=verified.email;
+
+    const user = await User.findOne({email});
+    const seller=await Seller.findOne({email});
+
+    if (!user&&!seller) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    
+    const temp=user?user:seller;
+    
+    res.status(200).json({ message: 'Token is valid', user:temp});
+   }
+   catch(error){
+    res.status(401).json({ message: 'Unauthorized' });
+   }  
+  });
 
 module.exports = authRouter;

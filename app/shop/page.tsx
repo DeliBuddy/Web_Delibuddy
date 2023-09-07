@@ -38,7 +38,16 @@ const Shop = () => {
   useEffect(() => {
     async function fetchShops() {
       try {
-        const response = await fetch(`http://localhost:3696/seller/getSellers`);
+        //add access token to the header
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3696/seller/getSellers`
+          , {
+            method: 'GET',
+            headers: {
+              token: token!,
+            },
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setShops(data);

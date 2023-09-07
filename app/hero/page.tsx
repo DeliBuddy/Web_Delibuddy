@@ -1,7 +1,67 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import {useEffect} from 'react';
+import {User} from '@/app/userSlice';
+import {Seller} from '@/app/sellerSlice';
+import {useDispatch} from 'react-redux';
+import {setUser} from '@/app/userSlice';
+import {useRouter} from 'next/navigation';
+import {setSeller} from '@/app/sellerSlice';
 
 const Hero = () => {
+  const dispatch=useDispatch();
+  const router= useRouter();
+
+  useEffect(() => {
+   const autoLogin=async()=>{
+    try{
+      const token =localStorage.getItem('token');
+      if(token){
+        const response=await fetch('http://localhost:3696/auth/isTokenValid',{
+          method:'GET',
+          headers:{
+            token:token,
+          }
+        })
+
+        if (response.ok) {
+          const { user} = await response.json();
+          
+          if (user.type === 'user') {
+            const userData:User={
+              _id:user._id,
+              name:user.name,
+              email:user.email,
+            }
+            dispatch(setUser(userData));
+            router.push('/shop');
+          } 
+      else if (user.type === 'seller') {
+
+        const sellerData:Seller={
+          _id:user._id,
+          name:user.name,
+          email:user.email,
+          orders:user.orders,
+        }
+
+        dispatch(setSeller(sellerData));
+        router.push('/seller');
+      } 
+    } else {
+      console.log('Login failed');
+    }
+    }
+}
+    catch(e){
+      console.log(e);
+    }
+   }
+    autoLogin();
+  }, []);
+
+
   return (
     <div className="bg-[url('/bg.png')] bg-cover bg-no-repeat bg-center">
       <div className="flex flex-col md:flex-row justify-between items-center px-20 py-8 ">

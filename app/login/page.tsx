@@ -33,8 +33,10 @@ const LoginScreen = () => {
       });
 
       if (response.ok) {
-        console.log('Login successful');
-        const { user } = await response.json();
+        const { user ,token} = await response.json();
+        console.log(token);
+        localStorage.setItem('token', token);
+
         if (user.type === 'user') {
           const userData:User={
             _id:user._id,
