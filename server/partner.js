@@ -65,16 +65,26 @@ partnerRouter.post('/orderIgnored', async (req, res) => {
         const { order,partner } = req.body;
         const io = req.app.get('io');
         try {
+            const partnerOtp=Math.floor(100000 + Math.random() * 900000);
+            const userOtp=Math.floor(100000 + Math.random() * 900000);
+
+
             const newOrder=await Order.findById(order._id);
             newOrder.status='forwarded';
             newOrder.partner=partner;
+            newOrder.partnerOtp=partnerOtp;
+            newOrder.userOtp=userOtp;
             await newOrder.save();
 
+            //generte otp
+          
             const seller = await Seller.findById(order.seller._id);
             seller.orders= seller.orders.map(item=>{
                 if(item._id.toString()===order._id.toString()){
                     item.status='forwarded';
                     item.partner=partner;
+                    item.partnerOtp=partnerOtp;
+                    item.userOtp=userOtp;
                 }
                 return item;
             });

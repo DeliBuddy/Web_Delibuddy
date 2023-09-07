@@ -169,37 +169,9 @@ orderRouter.get('/getOrders', async (req, res) => {
     }
   });
 
+
+
   orderRouter.post('/orderDelivered', async (req, res) => {
-    const {order}=req.body;
-    try{
-      const updatedOrder= await Order.findById(order._id);
-      updatedOrder.status='delivered';
-      await updatedOrder.save();
-
-      const seller=await Seller.findById(order.seller._id);
-      seller.orders=seller.orders.map(item=>{
-        if(item._id.toString()===order._id.toString()){
-          item.status='delivered';
-        }
-        return item;
-      }
-      );
-      await seller.save();
-
-      //deleting the chat room
-      await Chat.findOneAndDelete({roomId:order._id});
-
-
-      const io = req.app.get('io');
-      io.to(order._id).emit('orderDelivered', updatedOrder);
-      res.status(200).json(updatedOrder);
-    }catch(error){
-      console.error(error);
-      res.status(500).json({ error: 'Failed to update order' });
-    }
-  });
-
-  orderRouter.post('/orderReceived', async (req, res) => {
     const {order}=req.body;
     try{
       //delete the order from Orders
@@ -210,11 +182,11 @@ orderRouter.get('/getOrders', async (req, res) => {
       seller.orders=seller.orders.filter(item=>item._id.toString()!==order._id.toString());
       await seller.save();
 
-
+      await Chat.findOneAndDelete({roomId:order._id});
 
       const io = req.app.get('io');
-      io.to(order.seller._id).emit('orderReceived', order._id);
-      io.to(order._id).emit('orderReceived');
+      io.to(order.seller._id).emit('orderDelivered', order._id);
+      io.to(order._id).emit('orderDelivered');
       res.status(200).json({ message: 'Order deleted successfully' });
     }catch(error){
       console.error(error);

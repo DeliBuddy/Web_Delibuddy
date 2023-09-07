@@ -17,6 +17,14 @@ partner: {
     type: [Map],
     default:null
   },
+  partnerOtp:{
+    type:String,
+    default:null
+  },
+  userOtp:{
+    type:String,
+    default:null
+  },
   status: String,
 });
 

@@ -13,6 +13,14 @@ const sellerSchema = new mongoose.Schema({
     seller:{
       type:Map,
     },
+    partnerOtp:{
+      type: String,
+      default:null
+    },
+    userOtp:{
+      type:String,
+      default:null
+    },
     partner: {
       type:Map,
       default:null

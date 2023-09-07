@@ -48,7 +48,7 @@ const SellerScreen=() => {
     });
 
     //when order is received by user
-    socket.on('orderReceived', (orderId) => {
+    socket.on('orderDelivered', (orderId) => {
       const updatedOrders = orders.filter((order) => order._id !== orderId);
       setOrders(updatedOrders);
     });
@@ -164,6 +164,45 @@ const SellerScreen=() => {
     }
   };
 
+  const handOver = async (order: Order) => {
+    try{
+      const otp=prompt("Enter the otp");
+      
+      if(otp===order.partnerOtp){
+          const response = await fetch(`http://localhost:3696/seller/handOverOrder`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              order
+            }),
+          });
+
+          if(response.ok){
+            const updatedOrder=await response.json();
+        
+            setOrders((prevOrders)=>{
+              return prevOrders.map((order)=>{
+                if(order._id===updatedOrder._id){
+                  return updatedOrder;
+                }
+                return order;
+              })
+            })
+          }
+
+        return;
+      }
+      else{
+        alert("Wrong OTP");
+      }
+    }
+    catch{
+      console.log("error");
+    }
+  }
+
 
   return (
     <div className="flex flex-col mt-20 justify-center items-center  bg-red w-full">
@@ -194,13 +233,18 @@ const SellerScreen=() => {
               )}
                {order.status === 'forwarded' && (
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  <button className="rounded-button text-[#E1573A]" onClick={()=>orderPrepared(order)}>Prepared</button>
+                  <button className="rounded-button text-[#E1573A]" onClick={()=>orderPrepared(order)}>Order prepared</button>
                 </div>
               )}
                {order.status === 'prepared' && (
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  Waiting to be delivered...
-                </div>
+                <button className="rounded-button text-[#E1573A]" onClick={()=>handOver(order)}>Hand over</button>
+              </div>
+              )}
+               {order.status === 'handover' && (
+                <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
+                Waiting to be delivered...
+              </div>
               )}
             </li>
            </div>

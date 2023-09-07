@@ -70,6 +70,9 @@ const ChatScreen = () => {
 
   const handleOrderDelivered = async () => {
     try{
+      const otp=prompt("Enter the otp");
+      
+      if(otp===order.userOtp){
       const response = await fetch(`http://localhost:3696/order/orderDelivered`, {
         method: 'POST',
         headers: {
@@ -84,32 +87,17 @@ const ChatScreen = () => {
         dispatch(setOrder(order));
       }
     }
+    else{
+      alert("Wrong OTP");
+    }
+  }
     catch(e){
       console.log(e);
     }
   
   };
 
-  const handleOrderReceived = async () => {
-    try{
-      const response = await fetch(`http://localhost:3696/order/orderReceived`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          order,
-        }),
-      });
-      if(response.ok){
-        const order= await response.json();
-      }
-    }
-    catch(e){
-      console.log(e);
-    }
   
-  };
 
   useEffect(() => {
     const getMessages = async () => {
@@ -141,11 +129,12 @@ const ChatScreen = () => {
     const socket = io('http://localhost:3696');
     socket.emit('joinChatRoom',order._id,entityType);
 
-  socket.on('orderPrepared',()=>{
-      alert("Order is prepared");
+  socket.on('messageFromSeller',(message)=>{
+    console.log("message from seller ",message);
+    setMessages([...messages,message]);
   });  
 
-  socket.on('orderReceived',()=>{
+  socket.on('orderDelivered',()=>{
     if(entityType==='partner'){
       router.push('/partner');
     }
@@ -162,11 +151,7 @@ const ChatScreen = () => {
     }
     );
 
-    socket.on('orderDelivered',(updatedOrder)=>{
-      alert("Order is delivered");
-      dispatch(setOrder(updatedOrder));
-      console.log(order);
-  });
+   
   }
   else{
     socket.on('userMessage', (message) => {
@@ -210,6 +195,8 @@ const ChatScreen = () => {
                 className={`p-4 rounded-lg ${
                   msg.user===entityType
                     ?'bg-white text-black rounded-tl-[20px] rounded-br-[20px] rounded-bl-[20px]'
+                   : msg.user==="seller"?
+                   'bg-green-500 rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px]'
                     : 'bg-[#E1573A] rounded-tr-[20px] rounded-bl-[20px] rounded-br-[20px]'
                 }`}
               >
@@ -253,14 +240,7 @@ const ChatScreen = () => {
      </button>
     )}
 
-{entityType==='user' && (
-       <button
-       className=" mx-auto flex flex-row px-6 py-2 rounded-md bg-[#E1573A] text-white focus:outline-none"
-       onClick={handleOrderReceived}
-     >
-       ORDER RECEIVED
-     </button>
-    )}
+
 
 
     {/* ORDER DETAILS */}
