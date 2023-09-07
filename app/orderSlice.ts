@@ -7,14 +7,25 @@ import {Seller} from './sellerSlice';
 //   name:string;
 // }
 
+//total_price:Map<string,string>[],
+//Modify the below interface to tell that total_price will be a list of Map
+interface TotalAmountItem{
+  item:string,
+  amount:number,
+}
+
 export interface Order {
   _id:string ,
   user: User;
   seller: Seller,
   items: string[],
   status: string,
-  total_price:string|null,
+  total_price:TotalAmountItem[],
 }
+
+
+
+
 
 interface OrderState {
   order: Order ;
@@ -36,7 +47,7 @@ const initialState: OrderState = {
     },
     items: [],
     status: '',
-    total_price:null,
+    total_price:[],
   },
 };
 
@@ -63,7 +74,7 @@ const orderSlice = createSlice({
         },
         items: [],
         status: '',
-        total_price:null,
+        total_price:[],
       };
     },
   },

@@ -58,11 +58,19 @@ const SellerScreen=() => {
     };
   }, [orders]);
 
-  const handleAccept = async (orderId: string) => {
-    const enteredAmount = prompt("Enter the amount:"); 
-    if (enteredAmount !== null) {
-      const amount = parseFloat(enteredAmount);
-      if (!isNaN(amount)) {
+  const handleAccept = async (order:Order) => {
+    // ask the amount for each item of the order
+    const total_amount:any=[];
+    for(let i=0;i<order.items.length;i++){
+      const enteredAmount = prompt(`Enter the amount for ${order.items[i]}:`);
+      if (enteredAmount !== null) {
+        const amount = parseFloat(enteredAmount);
+        if (!isNaN(amount)) {
+          total_amount.push({ item:order.items[i],amount});
+        }
+      }
+    }
+    
         try {
           
           const response = await fetch(`http://localhost:3696/order/acceptOrder`, {
@@ -71,14 +79,14 @@ const SellerScreen=() => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              orderId,
-              amount,
+              orderId:order._id,
+              total_amount,
               sellerId: seller._id,
             }),
           });
 
           if (response.ok) {
-            const updatedOrders = orders.filter((order) => order._id !== orderId);
+            const updatedOrders = orders.filter((item) => item._id !== order._id);
             setOrders(updatedOrders);
             console.log('API call successful');
           } else {
@@ -86,11 +94,7 @@ const SellerScreen=() => {
           }
         } catch (error) {
           console.error('API call error:', error);
-        }
-      } else {
-        console.error('Invalid amount entered');
-      }
-    }
+        } 
   };
 
   const handleDeny = async (orderId: string) => {
@@ -184,7 +188,7 @@ const SellerScreen=() => {
               ))}
               {order.status === 'pending' && (
                 <div className="rounded-card bg-red mt-2 flex flex-row justify-around">
-                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order._id)}>Accept</button>
+                  <button className="rounded-button text-[#E1573A]" onClick={() => handleAccept(order)}>Accept</button>
                   <button className="rounded-button" onClick={() => handleDeny(order._id)}>Deny</button>
                 </div>
               )}

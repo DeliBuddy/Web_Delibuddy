@@ -35,7 +35,7 @@ const LoginScreen = () => {
       if (response.ok) {
         const { user ,token} = await response.json();
         console.log(token);
-        localStorage.setItem('token', token);
+        //localStorage.setItem('token', token);
 
         if (user.type === 'user') {
           const userData:User={

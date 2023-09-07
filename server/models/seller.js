@@ -19,7 +19,7 @@ const sellerSchema = new mongoose.Schema({
      },
       items: [String],
       total_price: {
-        type: Number,
+        type: [Map],
         default:null
       },
       status: String,

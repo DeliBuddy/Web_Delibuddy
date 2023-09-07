@@ -13,53 +13,53 @@ const Hero = () => {
   const dispatch=useDispatch();
   const router= useRouter();
 
-  useEffect(() => {
-   const autoLogin=async()=>{
-    try{
-      const token =localStorage.getItem('token');
-      if(token){
-        const response=await fetch('http://localhost:3696/auth/isTokenValid',{
-          method:'GET',
-          headers:{
-            token:token,
-          }
-        })
+//   useEffect(() => {
+//    const autoLogin=async()=>{
+//     try{
+//       const token =localStorage.getItem('token');
+//       if(token){
+//         const response=await fetch('http://localhost:3696/auth/isTokenValid',{
+//           method:'GET',
+//           headers:{
+//             token:token,
+//           }
+//         })
 
-        if (response.ok) {
-          const { user} = await response.json();
+//         if (response.ok) {
+//           const { user} = await response.json();
           
-          if (user.type === 'user') {
-            const userData:User={
-              _id:user._id,
-              name:user.name,
-              email:user.email,
-            }
-            dispatch(setUser(userData));
-            router.push('/shop');
-          } 
-      else if (user.type === 'seller') {
+//           if (user.type === 'user') {
+//             const userData:User={
+//               _id:user._id,
+//               name:user.name,
+//               email:user.email,
+//             }
+//             dispatch(setUser(userData));
+//             router.push('/shop');
+//           } 
+//       else if (user.type === 'seller') {
 
-        const sellerData:Seller={
-          _id:user._id,
-          name:user.name,
-          email:user.email,
-          orders:user.orders,
-        }
+//         const sellerData:Seller={
+//           _id:user._id,
+//           name:user.name,
+//           email:user.email,
+//           orders:user.orders,
+//         }
 
-        dispatch(setSeller(sellerData));
-        router.push('/seller');
-      } 
-    } else {
-      console.log('Login failed');
-    }
-    }
-}
-    catch(e){
-      console.log(e);
-    }
-   }
-    autoLogin();
-  }, []);
+//         dispatch(setSeller(sellerData));
+//         router.push('/seller');
+//       } 
+//     } else {
+//       console.log('Login failed');
+//     }
+//     }
+// }
+//     catch(e){
+//       console.log(e);
+//     }
+//    }
+//     autoLogin();
+//   }, []);
 
 
   return (

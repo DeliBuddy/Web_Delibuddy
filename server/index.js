@@ -59,7 +59,7 @@ app.use(express.json());
 app.set('io', io);
 app.use("/auth", authRouter);
 
-app.use(validateToken);
+//app.use(validateToken);
 app.use("/order", orderRouter);
 app.use("/partner", partnerRouter);
 app.use("/seller",sellerRouter);

@@ -43,9 +43,9 @@ const Shop = () => {
         const response = await fetch(`http://localhost:3696/seller/getSellers`
           , {
             method: 'GET',
-            headers: {
-              token: token!,
-            },
+            // headers: {
+            //   token: token!,
+            // },
           }
         );
         if (response.ok) {

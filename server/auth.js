@@ -10,7 +10,7 @@ authRouter.post('/register', async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
-    const newUser = new User({
+    const newUser = new Seller({
       name,
       email,
       password: hashedPassword,
@@ -47,12 +47,12 @@ authRouter.post('/login', async (req, res) => {
       // create a json web token
 
 
-      const token = await jwt.sign(
-        { email: temp.email },
-        "bisleri",
-        { expiresIn: '1h' },
-      );
-      res.status(200).json({ message: 'Login successful', user:temp, token});
+      // const token = await jwt.sign(
+      //   { email: temp.email },
+      //   "bisleri",
+      //   { expiresIn: '1h' },
+      // );
+      res.status(200).json({ message: 'Login successful', user:temp});
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: 'An error occurred while logging in' });

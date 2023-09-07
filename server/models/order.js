@@ -14,7 +14,7 @@ partner: {
  },
   items: [String],
   total_price: {
-    type: Number,
+    type: [Map],
     default:null
   },
   status: String,

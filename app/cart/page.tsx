@@ -104,17 +104,17 @@ const Cart= () => {
            
             </div>
             <div className='flex flex-col gap-4'>
-  {items.map((item, index) => (
+  {order.total_price.map((item, index) => (
     <div className="flex flex-row w-full font-bold text-[16px] md:text-[18px] text-white" key={index}>
       <p style={{ width: '70%' }}>
-        {item.name}
+        {item.item}
       </p>
       <div className='flex flex-row' style={{ width: '30%' }}>
         <p className='text-center' style={{ width: '50%' }}>
-          {item.quantity}
+          99
         </p>
         <p className='text-center' style={{ width: '55%' }}>
-          {item.price}
+          {item.amount}
         </p>
       </div>
     </div>
@@ -163,7 +163,7 @@ const Cart= () => {
                 
             </p>
             <p className='text-center' style={{width:'55%'}}>
-                {order.total_price}
+                Total price krlenge calculate
             </p>
             </div>
            

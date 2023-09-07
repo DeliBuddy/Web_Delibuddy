@@ -63,7 +63,7 @@ orderRouter.get('/getOrders', async (req, res) => {
   });
 
   orderRouter.post('/acceptOrder', async (req, res) => {
-    const { orderId, amount,sellerId } = req.body;
+    const { orderId, total_amount,sellerId } = req.body;
   
     try {
       //find the order in the seller's orders array
@@ -81,13 +81,19 @@ orderRouter.get('/getOrders', async (req, res) => {
       for(let i=0;i<seller.orders.length;i++){
         if(seller.orders[i]._id.toString()==orderId){
           seller.orders[i].status = 'accepted';
-          seller.orders[i].total_price = amount;
+          seller.orders[i].total_price = total_amount;
           index=i;
           break;
         }
       }
       // order.status = 'accepted';
       // order.amount = amount;
+
+      const updatedOrder=await Order.findById(orderId);
+      updatedOrder.status='accepted';
+      updatedOrder.total_price=total_amount;
+      await updatedOrder.save();
+
       await seller.save();
 
 
