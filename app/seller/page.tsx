@@ -166,6 +166,7 @@ const SellerScreen=() => {
 
   const handOver = async (order: Order) => {
     try{
+      //partner will enter the otp before picking up,seller will enter it
       const otp=prompt("Enter the otp");
       
       if(otp===order.partnerOtp){

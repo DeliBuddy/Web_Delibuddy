@@ -70,6 +70,7 @@ const ChatScreen = () => {
 
   const handleOrderDelivered = async () => {
     try{
+      //user will tell the otp, partner will enter it
       const otp=prompt("Enter the otp");
       
       if(otp===order.userOtp){
@@ -82,9 +83,8 @@ const ChatScreen = () => {
           order,
         }),
       });
+
       if(response.ok){
-        const order= await response.json();
-        dispatch(setOrder(order));
       }
     }
     else{
@@ -136,10 +136,10 @@ const ChatScreen = () => {
 
   socket.on('orderDelivered',()=>{
     if(entityType==='partner'){
-      router.push('/partner');
+      router.replace('/partner');
     }
     else{
-      router.push('/shop');
+      router.replace('/shop');
     }
   });
 
@@ -251,7 +251,12 @@ const ChatScreen = () => {
           <div>
             <p>Order ID: {order._id}</p>
             {/* Display the list of items here */}
-
+            {entityType==='partner' && (
+              <p>OTP: {order.partnerOtp}</p>
+            )}
+            {entityType==='user' && (
+              <p>OTP: {order.userOtp}</p>
+            )}
             <p>Items:</p>
             <div className="flex flex-col space-y-2 0">
               {order.items.map((item) => (
